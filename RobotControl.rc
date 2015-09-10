@@ -1,0 +1,689 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(简体，中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\RobotControl.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
+    "#include ""l.chs\\afxprint.rc""        // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\RobotControl.ico"
+IDR_ROBOTCTYPE          ICON                    "res\\RobotControlDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "新建(&N)\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "打开(&O)...\tCtrl+O",           ID_FILE_OPEN
+        MENUITEM "保存(&S)\tCtrl+S",              ID_FILE_SAVE
+        MENUITEM "另存为(&A)...",                  ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "打印(&P)...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "打印预览(&V)",                    ID_FILE_PRINT_PREVIEW
+        MENUITEM "打印设置(&R)...",                 ID_FILE_PRINT_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "最近文件",                        ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",                      ID_APP_EXIT
+    END
+    POPUP "编辑(&E)"
+    BEGIN
+        MENUITEM "撤消(&U)\tCtrl+Z",              ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
+        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "粘贴(&P)\tCtrl+V",              ID_EDIT_PASTE
+    END
+    POPUP "查看(&V)"
+    BEGIN
+        MENUITEM "工具栏(&T)",                     ID_VIEW_TOOLBAR
+        MENUITEM "状态栏(&S)",                     ID_VIEW_STATUS_BAR
+    END
+    POPUP "连接"
+    BEGIN
+        MENUITEM "连接主控计算机",                     ID_CONNECT_COMPUTER
+        MENUITEM "断开连接",                        ID_STOP_CONNECT
+    END
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "关于 RobotControl(&A)...",      ID_APP_ABOUT
+    END
+END
+
+IDR_MENUCONTEXT MENU
+BEGIN
+    POPUP "ListModule"
+    BEGIN
+        MENUITEM "&Init",                       IDM_INITMODULE
+        MENUITEM "&Reset",                      IDM_RESETMODULE
+        MENUITEM "&Halt",                       IDM_HALTMODULE
+        MENUITEM "0_Current",                   IDM_0CURRENTMODULE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 RobotControl"
+FONT 9, "宋体"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "RobotControl 1.0 版",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "版权所有 (C) 2011",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "确定",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_SIDEBAR DIALOG 0, 0, 148, 337
+STYLE DS_SETFONT | WS_CHILD
+FONT 10, "System"
+BEGIN
+END
+
+IDD_INITHARDWARE DIALOGEX 0, 0, 193, 512
+STYLE DS_SETFONT | WS_CHILD | WS_VSCROLL
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "PMac初始化",IDC_STATIC,7,7,168,38
+    PUSHBUTTON      "PMac打开",IDC_BUTTON_PMACOPEN,15,23,40,14
+    PUSHBUTTON      "PMac关闭",IDC_BUTTON_PMACCLOSE,61,23,40,14
+    LTEXT           "Static",IDC_STATIC_PMACMAIL,7,123,168,16,SS_NOTIFY,WS_EX_CLIENTEDGE
+    GROUPBOX        "导轨操作",IDC_STATIC,7,48,168,70
+    PUSHBUTTON      "回零",IDC_BUTTON_ZERO,106,23,30,14
+    PUSHBUTTON      "复位",IDC_BUTTON_RESET,142,23,30,14
+    LTEXT           "速    度",IDC_STATIC,11,62,36,14
+    LTEXT           "绝对位置",IDC_STATIC,11,78,36,14
+    LTEXT           "相对位置",IDC_STATIC,11,96,36,14
+    EDITTEXT        IDC_EDIT_VELOCITY,49,62,43,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ABSOPOSITION,49,78,43,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_RELAPOSITION,49,94,43,13,ES_AUTOHSCROLL
+    LTEXT           "mm/s",IDC_STATIC,106,62,23,14
+    LTEXT           "mm",IDC_STATIC,106,78,20,14
+    LTEXT           "mm",IDC_STATIC,106,94,20,14
+    PUSHBUTTON      "确定",IDC_BUTTON_MAKESURE,134,62,33,12
+    PUSHBUTTON      "运行",IDC_BUTTON_RUN2,134,94,33,12
+    PUSHBUTTON      "运行",IDC_BUTTON_RUN1,134,78,33,12
+    GROUPBOX        "模块检测",IDC_STATIC,7,202,168,303
+    CONTROL         "List1",IDC_LIST_MODULE,"SysListView32",LVS_REPORT | WS_BORDER | WS_TABSTOP,13,155,162,85
+    PUSHBUTTON      "&Scan",IDC_BUTTON_SCAN,13,245,32,12
+    PUSHBUTTON      "遥 测",IDC_BUTTON_TELEMETRY,51,246,32,12,WS_DISABLED
+    LTEXT           "Pos",IDC_STATIC,48,312,28,12
+    LTEXT           "Vel",IDC_STATIC,83,312,28,12
+    LTEXT           "Acc",IDC_STATIC,114,312,28,12
+    EDITTEXT        IDC_EDIT_POSMODULE1,43,324,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_VELMODULE1,75,324,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ACCMODULE1,107,324,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Go",IDC_BUTTON_GO1,143,324,32,11,WS_DISABLED
+    EDITTEXT        IDC_EDIT_POSMODULE2,43,338,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_VELMODULE2,75,338,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ACCMODULE2,107,338,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Go",IDC_BUTTON_GO2,143,338,32,11,WS_DISABLED
+    EDITTEXT        IDC_EDIT_POSMODULE3,43,352,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_VELMODULE3,75,352,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ACCMODULE3,107,352,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Go",IDC_BUTTON_GO3,143,352,32,11,WS_DISABLED
+    EDITTEXT        IDC_EDIT_POSMODULE4,43,366,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_VELMODULE4,75,366,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ACCMODULE4,107,366,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Go",IDC_BUTTON_GO4,143,366,32,11,WS_DISABLED
+    EDITTEXT        IDC_EDIT_POSMODULE5,43,380,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_VELMODULE5,75,380,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ACCMODULE5,107,380,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Go",IDC_BUTTON_GO5,143,380,32,11,WS_DISABLED
+    EDITTEXT        IDC_EDIT_POSMODULE6,43,393,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_VELMODULE6,75,393,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ACCMODULE6,107,393,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Go",IDC_BUTTON_GO6,143,393,32,11,WS_DISABLED
+    PUSHBUTTON      "&Exit",IDC_BUTTON_EXIT,89,246,32,12
+    CONTROL         "关节1",IDC_RADIO_MODULE1,"Button",BS_AUTORADIOBUTTON,7,324,32,12
+    CONTROL         "关节2",IDC_RADIO_MODULE2,"Button",BS_AUTORADIOBUTTON,7,338,32,12
+    CONTROL         "关节3",IDC_RADIO_MODULE3,"Button",BS_AUTORADIOBUTTON,7,352,32,12
+    CONTROL         "关节4",IDC_RADIO_MODULE4,"Button",BS_AUTORADIOBUTTON,7,366,32,12
+    CONTROL         "关节5",IDC_RADIO_MODULE5,"Button",BS_AUTORADIOBUTTON,7,380,32,12
+    CONTROL         "关节6",IDC_RADIO_MODULE6,"Button",BS_AUTORADIOBUTTON,7,393,32,12
+    EDITTEXT        IDC_EDIT_POSMODULE7,43,407,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_VELMODULE7,75,407,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ACCMODULE7,107,407,25,12,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Go",IDC_BUTTON_GO7,143,407,32,11,WS_DISABLED
+    CONTROL         "关节7",IDC_RADIO_MODULE7,"Button",BS_AUTORADIOBUTTON,7,407,32,12
+    GROUPBOX        "Actual Module Parameter",IDC_STATIC,15,262,160,49
+    LTEXT           "act pos: 0.0000 degree",IDC_STATIC_ACTPOS,18,272,120,9
+    LTEXT           "act vel: 0.000 rad/s",IDC_STATIC_ACTVEL,18,283,124,10
+    LTEXT           "act deltapos: 0.0000 mm",IDC_STATIC_DELTAPOS,18,295,127,12
+END
+
+IDD_PATHPLAN DIALOGEX 0, 0, 187, 354
+STYLE DS_SETFONT | WS_CHILD
+FONT 9, "宋体", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "关节角输入",IDC_STATIC,13,7,160,185
+    LTEXT           "J1(R)",IDC_STATIC,19,45,23,12
+    EDITTEXT        IDC_EDIT_JNT1,44,44,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT1,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,43,87,13
+    LTEXT           "J2(R)",IDC_STATIC,19,65,23,12
+    EDITTEXT        IDC_EDIT_JNT2,44,64,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT2,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,63,87,13
+    LTEXT           "J3(R)",IDC_STATIC,19,86,23,12
+    EDITTEXT        IDC_EDIT_JNT3,44,85,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT3,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,84,87,13
+    LTEXT           "J4(R)",IDC_STATIC,19,107,23,12
+    EDITTEXT        IDC_EDIT_JNT4,44,106,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT4,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,105,87,13
+    LTEXT           "J5(R)",IDC_STATIC,19,127,23,12
+    EDITTEXT        IDC_EDIT_JNT5,44,126,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT5,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,125,87,13
+    LTEXT           "J6(R)",IDC_STATIC,19,147,23,12
+    EDITTEXT        IDC_EDIT_JNT6,44,146,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT6,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,145,87,13
+    LTEXT           "J7(R)",IDC_STATIC,19,167,23,12
+    EDITTEXT        IDC_EDIT_JNT7,44,166,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT7,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,165,87,13
+    LTEXT           "-180",IDC_STATIC,83,55,21,8
+    LTEXT           "0",IDC_STATIC,125,55,14,8
+    LTEXT           "180",IDC_STATIC,156,55,14,8
+    LTEXT           "-90",IDC_STATIC,83,75,21,8
+    LTEXT           "0",IDC_STATIC,125,75,14,8
+    LTEXT           "90",IDC_STATIC,156,75,14,8
+    LTEXT           "-180",IDC_STATIC,83,97,21,8
+    LTEXT           "0",IDC_STATIC,125,97,14,8
+    LTEXT           "180",IDC_STATIC,156,97,14,8
+    LTEXT           "-120",IDC_STATIC,83,118,21,8
+    LTEXT           "0",IDC_STATIC,125,118,14,8
+    LTEXT           "120",IDC_STATIC,156,118,14,8
+    LTEXT           "-180",IDC_STATIC,83,138,21,8
+    LTEXT           "0",IDC_STATIC,125,138,14,8
+    LTEXT           "180",IDC_STATIC,156,138,14,8
+    LTEXT           "-150",IDC_STATIC,84,158,21,8
+    LTEXT           "0",IDC_STATIC,126,158,14,8
+    LTEXT           "150",IDC_STATIC,157,158,14,8
+    LTEXT           "-180",IDC_STATIC,84,177,21,8
+    LTEXT           "0",IDC_STATIC,126,177,14,8
+    LTEXT           "180",IDC_STATIC,157,177,14,8
+    PUSHBUTTON      "设  置",IDC_BUTTON_SET,20,197,41,13
+    PUSHBUTTON      "复  位",IDC_BUTTON_RESET,69,197,41,13
+    GROUPBOX        "规划设置",IDC_STATIC,13,243,158,60
+    LTEXT           "规划时间：",IDC_STATIC,17,255,41,12
+    EDITTEXT        IDC_EDIT_PLANTIME,59,253,29,13,ES_AUTOHSCROLL
+    LTEXT           "加速时间：",IDC_STATIC,94,255,41,12
+    EDITTEXT        IDC_EDIT_ACCTIME,136,253,30,13,ES_AUTOHSCROLL
+    CONTROL         "直线规划",IDC_RADIO_LINEARPLAN,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,29,271,45,9
+    CONTROL         "手动操作",IDC_RADIO_HANDCONTROL,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,107,271,45,9
+    CONTROL         "自主规划",IDC_RADIO_AUTOPLAN,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,29,287,45,9
+    CONTROL         "预编程",IDC_RADIO_PROGRAMM,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,107,287,45,9
+    PUSHBUTTON      "初始化",IDC_BUTTON_INIT,17,309,41,13
+    PUSHBUTTON      "确 定",IDC_BUTTON_INIOK,67,309,41,13,WS_DISABLED
+    PUSHBUTTON      "运 行",IDC_BUTTON_RUN,116,309,41,13,WS_DISABLED
+    PUSHBUTTON      "暂 停",IDC_BUTTON_STOP,17,327,41,13,WS_DISABLED
+    LTEXT           "J0(L)",IDC_STATIC,19,25,23,12
+    EDITTEXT        IDC_EDIT_JNT0,44,24,31,12,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SLIDER_JNT0,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,82,23,87,13
+    LTEXT           "-1m",IDC_STATIC,83,35,21,8
+    LTEXT           "0",IDC_STATIC,125,35,14,8
+    LTEXT           "1m",IDC_STATIC,156,35,14,8
+    CONTROL         "仿真",IDC_RADIO_SUMU,"Button",BS_AUTORADIOBUTTON,30,220,44,11
+    CONTROL         "机械臂",IDC_RADIO_JXB,"Button",BS_AUTORADIOBUTTON,98,220,44,11
+    PUSHBUTTON      "保存数据",IDC_BUTTON_SAVEDATA,67,327,41,13
+    PUSHBUTTON      "键盘控制",IDC_KEY_CONTROL,119,197,44,14
+    PUSHBUTTON      "摄像机",IDC_CAMERA,115,326,41,14
+END
+
+IDD_LINERPLANSETTING DIALOG 0, 0, 162, 141
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "直线路径规划参数设置"
+FONT 10, "宋体"
+BEGIN
+    GROUPBOX        "当前末端点位姿显示",IDC_STATIC,7,7,148,51
+    EDITTEXT        IDC_EDIT_PXINT,17,19,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PYINT,63,19,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PZINT,109,19,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_AIFINT,17,39,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BITINT,63,39,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_GAMINT,109,39,37,12,ES_AUTOHSCROLL
+    GROUPBOX        "目标点位姿设置",IDC_STATIC,7,61,148,51
+    EDITTEXT        IDC_EDIT_PXEND,17,73,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PYEND,63,73,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PZEND,109,73,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_AIFEND,17,93,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BITEND,63,93,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_GAMEND,109,93,37,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "导入",IDC_BUTTON_IMPORT,13,116,30,12
+    PUSHBUTTON      "设置",IDC_BUTTON_SET,47,116,30,12
+    PUSHBUTTON      "OK",IDOK,82,116,30,12,WS_DISABLED
+    PUSHBUTTON      "Cancel",IDCANCEL,116,116,30,12
+END
+
+IDD_AUTOPLANSETTING DIALOG 0, 0, 183, 193
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "自主规划参数设置"
+FONT 10, "宋体"
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,92,164,35,14,WS_DISABLED
+    PUSHBUTTON      "取消",IDCANCEL,132,164,35,14
+    GROUPBOX        "当前末端点位姿显示",IDC_STATIC,7,6,169,49
+    GROUPBOX        "目标点位姿设置",IDC_STATIC,7,57,169,47
+    EDITTEXT        IDC_PXINT,13,17,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PYINT,65,17,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PZINT,118,17,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_AIFINT,13,36,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_BITINT,65,36,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_GAMINT,118,36,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PXEND,13,68,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PYEND,65,68,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PZEND,119,68,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_AIFEND,13,86,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_BITEND,65,87,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_GAMEND,119,87,40,14,ES_AUTOHSCROLL
+    GROUPBOX        "自主捕获方向设置",IDC_STATIC,7,118,169,34
+    CONTROL         "视觉引导",IDC_CHECK_EYE,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,106,48,10
+    CONTROL         "沿X正方向",IDC_RAD_CAPORIENTX,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,127,53,10
+    CONTROL         "沿X负方向",IDC_RAD_CAPORIENTXF,"Button",BS_AUTORADIOBUTTON,10,139,53,10
+    CONTROL         "沿Z正方向",IDC_RAD_CAPORIENTZ,"Button",BS_AUTORADIOBUTTON,123,127,47,10
+    CONTROL         "沿Y正方向",IDC_RAD_CAPORIENTY,"Button",BS_AUTORADIOBUTTON,65,128,53,10
+    CONTROL         "沿Y负方向",IDC_RAD_CAPORIENTYF,"Button",BS_AUTORADIOBUTTON,65,139,53,10
+    CONTROL         "沿Z负方向",IDC_RAD_CAPORIENTZF,"Button",BS_AUTORADIOBUTTON,123,139,45,10
+    PUSHBUTTON      "导入",IDC_BTN_IMPORT,13,164,36,14
+    PUSHBUTTON      "设置",IDC_BTN_SET,52,164,34,14
+END
+
+IDD_HANDCONTROL DIALOG 0, 0, 187, 235
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "手动控制"
+FONT 10, "宋体"
+BEGIN
+    GROUPBOX        "运动模式",IDC_STATIC,68,13,103,24
+    CONTROL         "平移",IDC_RADIO_TRANSLATE,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,78,24,32,10
+    CONTROL         "旋转",IDC_RADIO_ROTATE,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,122,24,32,10
+    CONTROL         "Slider1",IDC_SLIDER_VELVALUE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,25,54,126,14
+    GROUPBOX        "速度控制",IDC_STATIC,16,42,156,33
+    GROUPBOX        "平移运动",IDC_STATIC,17,81,151,56
+    PUSHBUTTON      "X正方向",IDC_BUTTON_XTRANSP,26,95,39,13
+    PUSHBUTTON      "Y正方向",IDC_BUTTON_YTRANSP,73,95,39,13
+    PUSHBUTTON      "Z正方向",IDC_BUTTON_ZTRANSP,119,95,39,13
+    PUSHBUTTON      "X负方向",IDC_BUTTON_XTRANSI,26,116,39,13
+    PUSHBUTTON      "Y负方向",IDC_BUTTON_YTRANSI,73,116,39,13
+    PUSHBUTTON      "Z负方向",IDC_BUTTON_ZTRANSI,119,116,39,13
+    GROUPBOX        "旋转运动",IDC_STATIC,17,140,151,56
+    PUSHBUTTON      "X正方向",IDC_BUTTON_XROTP,26,154,39,13
+    PUSHBUTTON      "Y正方向",IDC_BUTTON_YROTP,73,154,39,13
+    PUSHBUTTON      "Z正方向",IDC_BUTTON_ZROTP,119,154,39,13
+    PUSHBUTTON      "X负方向",IDC_BUTTON_XROTI,26,175,39,13
+    PUSHBUTTON      "Y负方向",IDC_BUTTON_YROTI,73,175,39,13
+    PUSHBUTTON      "Z负方向",IDC_BUTTON_ZROTI,119,175,39,13
+    PUSHBUTTON      "停止",IDC_BUTTON_STOPH,74,205,39,13
+    PUSHBUTTON      "复位",IDC_BUTTON_RESETH,122,206,39,13,WS_DISABLED
+    PUSHBUTTON      "设置",IDC_BUTTON_SETH,18,16,39,13
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404B0"
+        BEGIN
+            VALUE "FileDescription", "RobotControl Microsoft 基础类应用程序"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "RobotControl"
+            VALUE "LegalCopyright", "版权所有 (C) 2011"
+            VALUE "OriginalFilename", "RobotControl.EXE"
+            VALUE "ProductName", "RobotControl 应用程序"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_SIDEBAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 141
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 330
+    END
+
+    IDD_INITHARDWARE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 175
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 505
+    END
+
+    IDD_PATHPLAN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 347
+    END
+
+    IDD_LINERPLANSETTING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 155
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 134
+    END
+
+    IDD_AUTOPLANSETTING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 176
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 186
+    END
+
+    IDD_HANDCONTROL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 228
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "RobotControl\n\nRobotC\n\n\nRobotControl.Document\nRobotC Document"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "RobotControl"
+    AFX_IDS_IDLEMESSAGE     "就绪"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "扩展名"
+    ID_INDICATOR_CAPS       "大写"
+    ID_INDICATOR_NUM        "数字"
+    ID_INDICATOR_SCRL       "滚动"
+    ID_INDICATOR_OVR        "改写"
+    ID_INDICATOR_REC        "记录"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "建立新文档\n新建"
+    ID_FILE_OPEN            "打开一个现有文档\n打开"
+    ID_FILE_CLOSE           "关闭活动文档\n关闭"
+    ID_FILE_SAVE            "保存活动文档\n保存"
+    ID_FILE_SAVE_AS         "将活动文档以一个新文件名保存\n另存为"
+    ID_FILE_PAGE_SETUP      "改变打印选项\n页面设置"
+    ID_FILE_PRINT_SETUP     "改变打印机及打印选项\n打印设置"
+    ID_FILE_PRINT           "打印活动文档\n打印"
+    ID_FILE_PRINT_PREVIEW   "显示整页\n打印预览"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "显示程序信息，版本号和版权\n关于"
+    ID_APP_EXIT             "退出应用程序；提示保存文档\n退出"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "打开该文档"
+    ID_FILE_MRU_FILE2       "打开该文档"
+    ID_FILE_MRU_FILE3       "打开该文档"
+    ID_FILE_MRU_FILE4       "打开该文档"
+    ID_FILE_MRU_FILE5       "打开该文档"
+    ID_FILE_MRU_FILE6       "打开该文档"
+    ID_FILE_MRU_FILE7       "打开该文档"
+    ID_FILE_MRU_FILE8       "打开该文档"
+    ID_FILE_MRU_FILE9       "打开该文档"
+    ID_FILE_MRU_FILE10      "打开该文档"
+    ID_FILE_MRU_FILE11      "打开该文档"
+    ID_FILE_MRU_FILE12      "打开该文档"
+    ID_FILE_MRU_FILE13      "打开该文档"
+    ID_FILE_MRU_FILE14      "打开该文档"
+    ID_FILE_MRU_FILE15      "打开该文档"
+    ID_FILE_MRU_FILE16      "打开该文档"
+END
+
+STRINGTABLE
+BEGIN
+    ID_NEXT_PANE            "切换到下一个窗格\n下一窗格"
+    ID_PREV_PANE            "切换回前一个窗格\n前一窗格"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_SPLIT         "将活动的窗口分隔成窗格\n分隔"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "删除被选对象\n删除"
+    ID_EDIT_CLEAR_ALL       "全部删除\n全部删除"
+    ID_EDIT_COPY            "复制被选对象并将其置于剪贴板上\n复制"
+    ID_EDIT_CUT             "剪切被选对象并将其置于剪贴板上\n剪切"
+    ID_EDIT_FIND            "查找指定的正文\n查找"
+    ID_EDIT_PASTE           "插入剪贴板内容\n粘贴"
+    ID_EDIT_REPEAT          "重复上一步操作\n重复"
+    ID_EDIT_REPLACE         "用不同的正文替换指定的正文\n替换"
+    ID_EDIT_SELECT_ALL      "选择整个文档\n选择全部"
+    ID_EDIT_UNDO            "撤消最后一步操作\n撤消"
+    ID_EDIT_REDO            "重新执行先前已撤消的操作\n重新执行"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "显示或隐藏工具栏\n显隐工具栏"
+    ID_VIEW_STATUS_BAR      "显示或隐藏状态栏\n显隐状态栏"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "改变窗口大小"
+    AFX_IDS_SCMOVE          "改变窗口位置"
+    AFX_IDS_SCMINIMIZE      "将窗口缩小成图标"
+    AFX_IDS_SCMAXIMIZE      "把窗口放大到最大尺寸"
+    AFX_IDS_SCNEXTWINDOW    "切换到下一个文档窗口"
+    AFX_IDS_SCPREVWINDOW    "切换到先前的文档窗口"
+    AFX_IDS_SCCLOSE         "关闭活动的窗口并提示保存所有文档"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "把窗口恢复到正常大小"
+    AFX_IDS_SCTASKLIST      "激活任务表"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "关闭打印预览模式\n取消预阅"
+END
+
+#endif    // 中文(简体，中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE 4, 2
+#pragma code_page(936)
+#endif //_WIN32
+#include "res\RobotControl.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.chs\afxres.rc"          // Standard components
+#include "l.chs\afxprint.rc"        // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
