@@ -11,6 +11,8 @@
 #include "InitHardware.h"
 #include "conio.h"
 #include "mmsystem.h"
+#include "XnCppWrapper.h"
+#include <opencv2/opencv.hpp>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -34,6 +36,7 @@ double VelocityLimit[6]={0,0,0,0,0,0};
 /////////////////////////////////////////////////////////////////////////////
 // CPathPlanDlg dialog
 
+using namespace xn;
 
 CPathPlanDlg::CPathPlanDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPathPlanDlg::IDD, pParent)
@@ -1574,5 +1577,116 @@ void CPathPlanDlg::viewProc(UINT message, WPARAM wParam, LPARAM lParam)
 void CPathPlanDlg::OnButtonCamera()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	XnStatus eResult;
+	Context mContext;
+	xn::ImageGenerator mImageGenerator; 
+	xn::DepthGenerator mDepthGenerator; 
+	const XnDepthPixel * depthMD;
+	const XnUInt8 * imgMD ;
+	xn::DepthMetaData mDepthMD;
 
+
+	IplImage * depthrgbimg;
+	IplImage * dep16Img ;
+	IplImage * bgrImg ;
+	IplImage * depthImg ;
+	IplImage * depthImg1 ;
+	IplImage * rgbImg ;
+	IplImage *image;
+
+	bool StartBtnFlag;
+	char txtfile[100];
+	char savefile[100];
+
+	XnPoint3D selectedPoint;
+	FILE* endposition;
+
+	eResult = mContext.Init();  
+	//CheckOpenNIError( eResult, "initialize context" );  
+
+	// 3. create depth generator  
+	eResult = mDepthGenerator.Create( mContext ); 
+	//CheckOpenNIError( eResult, "Create depth generator" ); 
+
+	// 4. create image generator  	
+	eResult = mImageGenerator.Create( mContext );  
+	//CheckOpenNIError( eResult, "Create image generator" );  
+	// 5. set map mode 
+	XnMapOutputMode mapMode; 
+	mapMode.nXRes = 640; 
+	mapMode.nYRes = 480;  
+	mapMode.nFPS =30; //帧数 
+	eResult = mDepthGenerator.SetMapOutputMode( mapMode ); 
+	eResult = mImageGenerator.SetMapOutputMode( mapMode );  
+
+	// 6. correct view port 
+	mDepthGenerator.GetAlternativeViewPointCap().SetViewPoint( mImageGenerator ); //匹配深度图和rgb图
+
+	// 7. tart generate data  
+	eResult = mContext.StartGeneratingAll();
+	// 8. read data 
+	eResult = mContext.WaitNoneUpdateAll();
+
+	dep16Img = cvCreateImage(cvSize(640,480),IPL_DEPTH_16U,1);
+	bgrImg = cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,3);
+	depthImg = cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,1);
+
+	depthImg1 = cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,1);
+
+	rgbImg = cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,3);
+	//clusterImg = cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,3);
+	StartBtnFlag = 1;
+	//RRT=0;
+	//hc=cvCreateImage(cvSize(640,480),IPL_DEPTH_16U,1);
+	
+	// initialize the selected point
+	selectedPoint.X = selectedPoint.Y = selectedPoint.Z = 0;
+	//写入图像
+	image = cvCreateImage(cvSize(640,480),8,1);//不要写在onTimer里
+	cvNamedWindow("result",1);
+	SetTimer(0,100,NULL);
+	
+	char txtName[30]; 
+	SYSTEMTIME systime;
+	GetSystemTime(&systime);
+	int second = LOBYTE(systime.wSecond);
+	int minute = LOBYTE(systime.wMinute);
+	int hour = LOBYTE(systime.wHour) + 8;
+	hour = hour%24;
+	int year = systime.wYear;
+	int month = LOBYTE(systime.wMonth);
+	int day = LOBYTE(systime.wDay);
+	char str_second[10],str_minute[10],str_hour[10],str_month[10],str_day[10],str_year[10];
+	sprintf_s(str_second,"%02d",second);
+	sprintf_s(str_minute,"%02d",minute);
+	sprintf_s(str_hour,"%02d",hour);
+	sprintf_s(str_day,"%02d",day);
+	sprintf_s(str_month,"%02d",month);
+	_itoa_s(year,str_year,10,10);
+	strcpy_s(txtName,30,str_year);
+	strcat_s(txtName,30,str_month);
+	strcat_s(txtName,30,str_day);
+	strcat_s(txtName,30,"_");
+	strcat_s(txtName,30,str_hour);
+	strcat_s(txtName,30,str_minute);
+
+
+	char dir_command[100];
+	char * file_dir = "F:\\projects\\robot\\RobotControl-20150908\\img-save\\";
+
+	strcpy_s(dir_command,100,"md ");
+	strcat_s(dir_command,100,file_dir);
+	strcat_s(dir_command,100,txtName);
+	system(dir_command);//创建目录  
+
+	strcpy(txtfile,file_dir);
+
+	strcat_s(txtfile,100,txtName);//先创建目录再往目录里写文件
+	strcat_s(txtfile,100,"\\");
+
+	strcat(txtfile,txtName);
+	strcat(txtfile,".txt");
+	endposition = fopen(txtfile, "wt+");
+	strcpy(savefile,file_dir);
+	strcat(savefile,txtName);
 }
