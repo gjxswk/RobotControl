@@ -12,7 +12,7 @@
 #include "conio.h"
 #include "mmsystem.h"
 #include "XnCppWrapper.h"
-#include <opencv2/opencv.hpp>
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +37,62 @@ double VelocityLimit[6]={0,0,0,0,0,0};
 // CPathPlanDlg dialog
 
 using namespace xn;
+
+XnStatus eResult;
+Context mContext;
+xn::ImageGenerator mImageGenerator; 
+xn::DepthGenerator mDepthGenerator; 
+const XnDepthPixel * depthMD;
+const XnUInt8 * imgMD ;
+xn::DepthMetaData mDepthMD;
+
+
+IplImage * depthrgbimg;
+IplImage * dep16Img ;
+IplImage * bgrImg ;
+IplImage * depthImg ;
+IplImage * depthImg1 ;
+IplImage * rgbImg ;
+IplImage *image;
+
+bool StartBtnFlag;
+bool flag_check;
+bool saveimg;
+bool hz_first=1;
+bool hz_second=1;
+
+int k = 0;
+char txtfile[100];
+char savefile[100];
+float z_min;
+int ttt;
+float z_t1=0.0f;
+float z_t2=0.0f;
+
+float m_posx;
+float m_posy;
+float m_posz;
+
+bool matlab_eng;
+extern bool handclose;
+extern bool handopen;
+extern bool flag_throw;
+extern bool flag_zero;
+extern bool flag_move1;
+extern bool flag_move2;
+
+XnPoint3D selectedPoint;
+XnPoint3D base; 
+
+XnDepthPixel *hz1=new XnDepthPixel[640*480]; //背景                                             //???????????????????????
+XnDepthPixel *hz2=new XnDepthPixel[640*480]; //实时场景信息                                     //???????????????????????
+XnDepthPixel *hz3=new XnDepthPixel[640*480]; //中转 
+XnDepthPixel *hz22=new XnDepthPixel[640*480]; //实时场景信息
+
+FILE* endposition;
+
+CvMemStorage * stor;
+CvSeq *cont;
 
 CPathPlanDlg::CPathPlanDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPathPlanDlg::IDD, pParent)
@@ -556,6 +612,18 @@ void CPathPlanDlg::OnRadioLinearplan()
 	
 }
 
+void CPathPlanDlg::DrawPicToHDC(IplImage* img, unsigned int ID)
+{
+	CDC *pDC = GetDlgItem(ID)->GetDC();
+	HDC hDC= pDC->GetSafeHdc();
+	CRect rect;
+	GetDlgItem(ID)->GetClientRect(&rect);
+	CvvImage cimg;
+	cimg.CopyOf(img,img->nChannels);
+	cimg.DrawToHDC(hDC,&rect);
+	ReleaseDC(pDC);
+}
+
 void CPathPlanDlg::OnTimer(UINT nIDEvent) 
 {
 	// TODO: Add your message handler code here and/or call default
@@ -855,6 +923,378 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 			KillTimer(4);
 		}
 		
+		UpdateData(FALSE);
+		view->InvalidateRect(NULL, FALSE);
+	}
+	if (nIDEvent == 5)
+	{
+	
+		eResult = mContext.WaitNoneUpdateAll();	///刷新数据的备份区域
+		depthMD = mDepthGenerator.GetDepthMap(); 
+		imgMD = mImageGenerator.GetImageMap();
+
+		memcpy(dep16Img->imageData,depthMD,640*480*2);
+
+		cvConvertScale(dep16Img,depthImg,255/4096.0,0);	
+		//cvConvertScale(dep16Img,depthImg1,255/4096.0,0);	
+
+		memcpy(bgrImg->imageData,imgMD,640*480*3);
+		cvCvtColor(bgrImg,rgbImg,CV_RGB2BGR);
+		mDepthGenerator.GetMetaData(mDepthMD);
+	
+		/****************** annotation by gjx ********************/
+		// DrawPicToHDC(depthImg, IDC_STATIC_DEPTH);
+		/*********************************************************/
+
+		if (flag_check==0)
+		{
+			if (saveimg == 1)
+			{
+				/*k=1;*/
+				char imgName_d[100];
+				char imgName_c[100];
+				char str_imgName[30];
+				char tempstr_d[100];
+				char tempstr_c[100];
+				strcpy_s(imgName_d,30,"d_");
+				strcpy_s(imgName_c,30,"c_");
+				sprintf_s(str_imgName,"%06d",k);
+				strcat_s(imgName_d,30,str_imgName);
+				strcat_s(imgName_c,30,str_imgName);
+				strcat_s(imgName_d,30,".bmp");
+				strcat_s(imgName_c,30,".bmp");
+
+				strcpy_s(tempstr_d,100,savefile);
+				strcat_s(tempstr_d,100,"\\");
+				strcpy_s(tempstr_c,100,savefile);
+				strcat_s(tempstr_c,100,"\\");
+
+				strcat(tempstr_d,imgName_d);//必须要加一个中间变量  否则覆盖
+				strcat(tempstr_c,imgName_c);
+				cvSaveImage(tempstr_d,depthImg);
+				cvSaveImage(tempstr_c,rgbImg);
+				//cvSaveImage(savefile,rgbImg);
+				k++;
+			}
+		}
+
+		XnPoint3D *Point3D_image=new XnPoint3D[640*480];
+		//XnPoint3D *Point3D_real=new XnPoint3D[640*480];
+		int idxShift,idx;
+		for(int j=0;j<480;j++)
+		{	
+			idxShift=j*640;
+			for(int i=0;i<640;i++)
+			{
+				idx=idxShift+i;
+				Point3D_image[idx].X=i;
+				Point3D_image[idx].Y=j;
+				Point3D_image[idx].Z=mDepthMD[idx];
+			}
+		}
+		
+		static int index[640*480];
+		int indexnum=0;
+		memset(hz3,0,sizeof(XnDepthPixel));
+	
+		for(int i=0;i<640*480;i++)
+		{
+			//hz3[i]=depthMD[i];
+
+
+			index[i]=0.0;
+
+			//if(Point3D_real[i].X>5&&Point3D_real[i].X<300&&Point3D_real[i].Y<500&&Point3D_real[i].Y>-500)///////选择感兴趣的部分        index=0时会出现错误  故如果选择的感兴趣的区域没有障碍物就会在运行时出错
+			//if(Point3D_image[i].X>290&&Point3D_image[i].X<370&&Point3D_image[i].Y<140&&Point3D_image[i].Y>50)
+			if(Point3D_image[i].X>350&&Point3D_image[i].X<480&&Point3D_image[i].Y<220&&Point3D_image[i].Y>100)
+			//if(Point3D_image[i].X>280&&Point3D_image[i].X<400&&Point3D_image[i].Y<220&&Point3D_image[i].Y>100)//
+			{
+				hz3[i]=depthMD[i];
+			}
+		}
+	
+		if (hz_second==1) //去除程序开始时圈定范围的黑框
+		{
+			memcpy(hz1,hz3,640*480*2);
+		}
+		if (hz_first==0)
+		{
+			memcpy(hz1,hz3,640*480*2);
+			hz_first=1;
+			hz_second=0;
+		}
+
+		if (hz_first==1)
+		{
+		
+			memcpy(hz2,hz3,640*480*2);
+
+
+			memcpy(hz22,hz3,640*480*2);
+		}
+		/*float z_min=0.0;*/
+
+	
+		for (int j=0;j<640*480;j++)
+		{
+			if(abs(hz2[j]-hz1[j])<=32)//4cm  40/(5000/4096)
+			//if(hz2[j]-hz1[j]<=32)
+			{
+				hz2[j]=4000;
+			}
+			else
+			{
+				index[indexnum]=j;	
+				indexnum++;
+
+				hz2[j]=0;//背景相减后深度值大于4cm的显示黑色
+
+			}
+		}
+		z_min=1600.0;//基座标
+
+		for (int i=0;i<indexnum;i++)
+		{
+			if(depthMD[(index[i])]!=0 && z_min<1673)
+			{
+				if ( z_min>depthMD[(index[i])]/*z_min<(1673-depthMD[(index[i])])*/)
+				{
+					z_min=depthMD[(index[i])];
+				}
+			}
+		
+		}
+
+		for (int j=0;j<640*480;j++)
+		{
+			if(abs(hz22[j]-hz1[j])>32 &&hz22[j]>z_min&& hz22[j]<=z_min+20)//4cm  40/(5000/4096)
+				//if(hz2[j]-hz1[j]<=32)
+			{
+				hz22[j]=0;
+			}
+			else
+			{
+				hz22[j]=4000;
+			}
+		}
+
+
+		cv::Mat depth_diff(480,640,CV_16UC1,hz2);
+		cvConvertScale(&IplImage(depth_diff),depthImg,255/4096.0,0);
+
+		cv::Mat depth_diff1(480,640,CV_16UC1,hz22);
+		cvConvertScale(&IplImage(depth_diff1),depthImg1,255/4096.0,0);
+ 		//memcpy(dep16Img->imageData,hz2,640*480*2);
+ 		//cvConvertScale(dep16Img,depthImg,255/4096.0,0);
+	
+	
+		//DrawPicToHDC(depthImg, IDC_STATIC_DEPTH);
+
+
+		cvShowImage("result",depthImg);
+		//cvReleaseImage(&depthImg);
+		//cvThreshold(depthImg,dst,30,255,CV_THRESH_BINARY);
+
+ 		stor=cvCreateMemStorage(0);
+		cont=cvCreateSeq(CV_SEQ_ELTYPE_POINT,sizeof(CvSeq),sizeof(CvPoint),stor);
+
+		int pixelx_green = 0;//区分顶面和侧面
+		int pixely_green = 0;
+
+		int pixelx_red = 0;
+		int pixely_red = 0;
+
+		float x=0.0;
+		float y=0.0;
+		float z=0.0;
+		float z_r=0.0;
+		float z_g=0.0;
+	
+ 		cvFindContours(depthImg,stor,&cont,sizeof(CvContour),CV_RETR_LIST,CV_CHAIN_APPROX_SIMPLE,cvPoint(0,0));
+		for (;cont;cont=cont->h_next)
+			{
+				CvRect r=((CvContour*)cont)->rect;
+				if (r.height*r.width<9000&&r.height*r.width>200)//判断语句必须加  否则输出的永远是320 240
+				{
+					cvRectangle(rgbImg,cvPoint(r.x,r.y),cvPoint(r.x+r.width,r.y+r.height),CV_RGB(255,0,0),1,CV_AA,0); //画红框
+					pixelx_red=r.x+0.5*r.width;
+					pixely_red=r.y+0.5*r.height;
+					z_r=Point3D_image[pixely_red*640+pixelx_red].Z;//写在里面
+				}
+			
+			}
+
+
+
+
+ 		cvFindContours(depthImg1,stor,&cont,sizeof(CvContour),CV_RETR_LIST,CV_CHAIN_APPROX_SIMPLE,cvPoint(0,0));
+ 		for (;cont;cont=cont->h_next)
+ 		{
+ 			CvRect r=((CvContour*)cont)->rect;
+ 			if (r.height*r.width<9000&&r.height*r.width>200)//判断语句必须加  否则输出的永远是320 240
+ 			{
+ 				cvRectangle(rgbImg,cvPoint(r.x,r.y),cvPoint(r.x+r.width,r.y+r.height),CV_RGB(0,255,0),1,CV_AA,0); //画绿框
+ 				pixelx_green=r.x+0.5*r.width;
+ 				pixely_green=r.y+0.5*r.height;
+ 				z_g=Point3D_image[pixely_green*640+pixelx_green].Z;//写在里面
+ 			}
+ 
+ 		}
+	    
+		/**************************annotated by gjx************************************/
+		//DrawPicToHDC(rgbImg, IDC_STATIC_COLOR); 
+		/******************************************************************************/
+	
+	   
+	
+
+		float cx=292.46;
+		float cy=215.492;
+		float fx=485.426;
+		float fy=487.471;
+
+		float inv_T[4][4]={{-0.9976, -0.0690, 0.0012,-0.5152},
+							{-0.0687, 0.9944, 0.0799, 0.1527},
+							{-0.0067,0.0796 ,-0.9968, 2.0735},
+							{0 , 0, 0 ,1.0000}};//标定矩阵，可以自己做标定
+		float c[4]={0.0};
+		float multipy[4] = {0.0};
+		CString s;
+
+		//////////////////////////鼠标响应点坐标显示
+
+		selectedPoint.Z = mDepthMD[int(selectedPoint.Y*640+selectedPoint.X)];
+		s.Format("%.2f %.2f %.2f", selectedPoint.X, selectedPoint.Y, selectedPoint.Z);
+
+		/* annotated by gjx */
+		// SetDlgItemText(IDC_IMAGECORD, s);
+		/******************************************/
+		//SetDlgItemText(IDC_EDIT1, s);
+
+		if (pixelx_green==0&&pixely_green==0)
+		{
+			if (pixelx_red==0&&pixely_red==0)
+			{
+				base.X = 0.0f;//基座标
+				base.Y = 0.0f;
+				base.Z = 0.0f;
+				s.Format("%f  %f  %f",
+					0.0,0.0,0.0);
+
+				// annotated by gjx 
+				//SetDlgItemText(IDC_EDIT2,s);
+				/************************************/
+			}
+			
+			else
+			{
+				z=z_r;
+				x=((pixelx_red-cx)/fx)*z*0.001;
+				y=((pixely_red-cy)/fy)*z*0.001;
+				c[0]= x;
+				c[1]= y;
+				c[2]= z*0.001;
+				c[3]= 1;
+				Array_Multipy(inv_T,c,multipy);
+				s.Format("%f  %f  %f",
+					base.X,base.Y-0.15,base.Z+0.05);//减15cm是因为标定时导轨处于中间位置  现在因空间不足将导轨正向移动了15cm
+				/************** annotated by gjx *********************/
+				//SetDlgItemText(IDC_EDIT2,s);
+				/******************************************************/
+			}
+		} 
+		else
+		{
+			z=z_g;
+			x=((pixelx_green-cx)/fx)*z*0.001;
+			y=((pixely_green-cy)/fy)*z*0.001;
+			c[0]= x;
+			c[1]= y;
+			c[2]= z*0.001;
+			c[3]= 1;
+			Array_Multipy(inv_T,c,multipy);
+			s.Format("%f  %f  %f",
+				base.X,base.Y-0.15,base.Z+0.05);//-0.15机械臂的真实坐标
+			/************** annotated by gjx ***************************/
+			// SetDlgItemText(IDC_EDIT2,s);
+			/***********************************************************/
+
+		}
+
+		//base.Z=0.62;
+		float zz=0.0;
+		zz=base.Z;
+		
+		
+		if ( zz>=0.5&&zz<0.9)//区别静止和运动
+		{
+			
+			if (flag_check==1)//机械臂初始化之后，才执行下面的动作
+			{
+				if (ttt==0)//
+				{
+					z_t1=base.Z;
+					if(z_t2 == 0.0f)
+						z_t2 = z_t1;
+					else
+					{
+						if (abs(z_t2-z_t1)<0.1)
+						{
+							flag_check=0;
+							SetTimer(1,100,NULL);//0.1秒取一次值
+							if ((0.70+base.Z)/2<0.64)
+							{//桌子高度0.7，取目标物中点
+								(0.70+base.Z)/2 == 0.645;//机械臂的安全高度
+							}
+							//往matlab 写入目标点信息goal.txt写入目标的坐标信息
+							FILE* goal = fopen("D:\\Cconection5\\matlabRRT\\goal.txt", "wt");
+							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
+							//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
+							//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
+							fprintf(goal, "%f  %f  %f\r\n",base.X+0.3,base.Y-0.08,(0.70+base.Z)/2+0.03);//相对于己坐标系
+							fclose(goal);
+
+							base.Z=0.0;
+
+
+							//调用MATLAB
+							matlab_eng=1;
+							HANDLE hthread;
+							hthread = CreateThread(NULL,0,OnBnClickedButtonGo,(LPVOID)this,0,NULL);
+							CloseHandle(hthread);
+							//hMutex = CreateMutex(NULL,false,NULL);
+							Sleep(10);
+							}
+						}
+						z_t2 = z_t1;
+					}
+				}
+				ttt++;
+				if (ttt==20)
+				{
+					ttt=0;
+				}
+			
+		}
+
+		
+		
+		
+		
+		//////////////////////////鼠标响应点坐标显示
+		
+		/*selectedPoint.Z = mDepthMD[int(selectedPoint.Y*640+selectedPoint.X)];
+		s.Format("%.2f %.2f %.2f", selectedPoint.X, selectedPoint.Y, selectedPoint.Z);
+		//SetDlgItemText(IDC_IMAGECORD, s);
+		SetDlgItemText(IDC_EDIT1, s);*/
+
+		
+
+
+
+		delete[] Point3D_image;
+		//delete[] Point3D_real;
+			
 		UpdateData(FALSE);
 		view->InvalidateRect(NULL, FALSE);
 	}
@@ -1328,7 +1768,7 @@ void CPathPlanDlg::OnButtonSavedata()
 	doc=view->GetDocument()->doc_delay; 
  //   doc->filename=filename; 
 
-	fp=fopen(filename+"预编程关节基座数据.txt","w");
+	fp = fopen(filename+"预编程关节基座数据.txt","w");
 	if(fp==NULL)	exit(1);
 	else
 	{
@@ -1572,34 +2012,32 @@ void CPathPlanDlg::viewProc(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+void CPathPlanDlg::Array_Multipy(float inv_T[4][4], float c[4], float multipy[4])
+{//图像坐标系向基座标系转换
+	int i,t;
+	float temp = 0;
+// 	int a1 = M, a2 = N, b2 = K;			//数组维数
 
+	for(i = 0; i < 4; i++)
+	{
+		
+			temp = 0;   
+			for(t = 0; t < 4; t++)
+			{   
+				temp += inv_T[i][t] * c[t];   
+			}   
+			multipy[i] = temp;   
+	  
+	} 
+	base.X=multipy[0];
+	base.Y=multipy[1];
+	base.Z=multipy[2];
+    
+}
 
 void CPathPlanDlg::OnButtonCamera()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	XnStatus eResult;
-	Context mContext;
-	xn::ImageGenerator mImageGenerator; 
-	xn::DepthGenerator mDepthGenerator; 
-	const XnDepthPixel * depthMD;
-	const XnUInt8 * imgMD ;
-	xn::DepthMetaData mDepthMD;
-
-
-	IplImage * depthrgbimg;
-	IplImage * dep16Img ;
-	IplImage * bgrImg ;
-	IplImage * depthImg ;
-	IplImage * depthImg1 ;
-	IplImage * rgbImg ;
-	IplImage *image;
-
-	bool StartBtnFlag;
-	char txtfile[100];
-	char savefile[100];
-
-	XnPoint3D selectedPoint;
-	FILE* endposition;
 
 	eResult = mContext.Init();  
 	//CheckOpenNIError( eResult, "initialize context" );  
@@ -1644,7 +2082,7 @@ void CPathPlanDlg::OnButtonCamera()
 	//写入图像
 	image = cvCreateImage(cvSize(640,480),8,1);//不要写在onTimer里
 	cvNamedWindow("result",1);
-	SetTimer(0,100,NULL);
+	SetTimer(5,100,NULL);
 	
 	char txtName[30]; 
 	SYSTEMTIME systime;
@@ -1689,4 +2127,196 @@ void CPathPlanDlg::OnButtonCamera()
 	endposition = fopen(txtfile, "wt+");
 	strcpy(savefile,file_dir);
 	strcat(savefile,txtName);
+}
+
+DWORD WINAPI OnBnClickedButtonGo(LPVOID lpParameter)
+{//调用matlab程序
+	
+	CPathPlanDlg* tempCrobot = (CPathPlanDlg *)lpParamerter;
+
+// 	FILE* goal = fopen("D:\\RRT\\7Dof  9.25\\goal.txt", "wt");
+// 	/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
+// 	fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,(0.65+base.Z)/2);//相对于己坐标系
+// 	fclose(goal);
+// 	if (base.Z>=0.55)
+// 	{
+
+
+
+// 		FILE* goal = fopen("D:\\RRT\\7Dof  9.25\\goal.txt", "wt");
+// 		/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
+// 		fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,(0.65+base.Z)/2);//相对于己坐标系
+// 		fclose(goal);
+
+
+
+		// 	char txtName[30]; 
+		// 	SYSTEMTIME systime;
+		// 	GetSystemTime(&systime);
+		// 	int second = LOBYTE(systime.wSecond);
+		// 	int minute = LOBYTE(systime.wMinute);
+		// 	int hour = LOBYTE(systime.wHour) + 8;
+		// 	hour = hour%24;
+		// 	int year = systime.wYear;
+		// 	int month = LOBYTE(systime.wMonth);
+		// 	int day = LOBYTE(systime.wDay);
+		// 	char str_second[10],str_minute[10],str_hour[10],str_month[10],str_day[10],str_year[10];
+		// 	sprintf_s(str_second,"%02d",second);
+		// 	sprintf_s(str_minute,"%02d",minute);
+		// 	sprintf_s(str_hour,"%02d",hour);
+		// 	sprintf_s(str_day,"%02d",day);
+		// 	sprintf_s(str_month,"%02d",month);
+		// 	_itoa_s(year,str_year,10,10);
+		// 	strcpy_s(txtName,30,str_year);
+		// 	strcat_s(txtName,30,str_month);
+		// 	strcat_s(txtName,30,str_day);
+		// 	strcat_s(txtName,30,"_");
+		// 	strcat_s(txtName,30,str_hour);
+		// 	strcat_s(txtName,30,str_minute);
+		// 	
+		// 	
+		// 	char dir_command[100];
+		// 	char * file_dir = "C:\\Users\\robot\\Desktop\\robot-71\\save\\";
+		// 
+		// 	strcpy_s(dir_command,100,"md ");
+		// 	strcat_s(dir_command,100,file_dir);
+		// 	strcat_s(dir_command,100,txtName);
+		// 	system(dir_command);//创建目录  
+		// 
+		// 	strcpy(txtfile,file_dir);
+		// 
+		// 	strcat_s(txtfile,100,txtName);//先创建目录再往目录里写文件
+		// 	strcat_s(txtfile,100,"\\");
+		// 
+		// 	strcat(txtfile,txtName);
+		// 	strcat(txtfile,".txt");
+		// 	strcpy(savefile,file_dir);
+		// 	strcat(savefile,txtName);
+
+
+		// 	FILE* endposition = fopen(txtfile, "at");//不覆盖原数据
+		// 	fprintf( endposition, "%f %f %f\r\n", m_posx,m_posy,m_posz);
+		// 	fclose(endposition);
+
+
+		// TODO: 在此添加控件通知处理程序代码
+
+
+	ArmCommand ac;
+
+	if (ArmCommand::GenCommand(ac, "Zero"))
+	{
+		tempCrobot->arm.RunCommand(ac);
+	}
+	else
+	{
+
+		AfxMessageBox(_T("Bad Parameters"));
+	}
+
+	
+
+	//--Matlab---
+	if (matlab_eng==1)//matlab 运行完了,跟VC接上。
+	{
+		Engine *ep /*= NULL*/;
+		if(!(ep=engOpen(NULL)))
+			::MessageBox(NULL,"Can' start the MATLAB engine","VC调用matlab engine示例程序",MB_OK);//不能注释掉
+		//engEvalString(ep,"addpath('D:\\RRT\\7Dof  9.25');");
+		engEvalString(ep,"addpath('D:\\Cconection5\\matlabRRT');");
+		engEvalString(ep,"main_0521;");//执行matlab的String 
+		//::MessageBox(NULL,"按任意键继续","VC调用matlab engine示例程序 by h&h",MB_OK);
+		engClose(ep);   
+		matlab_eng=0;
+	}
+	// matlab_eng=0;   
+	if (matlab_eng==0)
+	{
+		ArmCommand ac;
+
+		//SetTimer(1,100,NULL);
+		//Sleep(10);
+		if (ArmCommand::GenCommand(ac, "Line"))
+		{
+			tempCrobot->arm.RunCommand(ac);
+		}
+		else
+		{
+			AfxMessageBox(_T("2Bad Parameters"));
+		}
+	}
+	//-----------
+
+	if (handclose==1)
+	{
+		HandCommand hc;
+
+		if (HandCommand::GenCommand(hc, "Close", 1, 1, 1, 0))
+		{
+			tempCrobot->hand.RunCommand(hc);
+		}
+		else
+		{
+			AfxMessageBox(_T("Bad Parameters"));
+		}	
+	}
+   
+	//flag_throw=1;
+
+	if (flag_throw==1)
+	{
+		ArmCommand ac;
+
+		if (ArmCommand::GenCommand(ac, "Throw"))
+		{
+			tempCrobot->arm.RunCommand(ac);
+		}
+		else
+		{
+			AfxMessageBox(_T("1Bad Parameters"));
+		}
+	}
+
+	if (handopen==1)
+	{
+		HandCommand hc;
+
+		if (HandCommand::GenCommand(hc, "Open", 1, 1, 1, 0))
+		{
+			tempCrobot->hand.RunCommand(hc);
+		}
+		else
+		{
+			AfxMessageBox(_T("Bad Parameters"));
+		}	
+	}
+
+	
+		//flag_check=1;
+		//Sleep(1000);
+	if (flag_zero==1)
+	{
+		/*OnBnClickedButtonUninitialize();*/
+		ArmCommand ac;
+
+		if (ArmCommand::GenCommand(ac, "Zero"))
+		{
+			tempCrobot->arm.RunCommand(ac);
+		}
+		else
+		{
+
+			AfxMessageBox(_T("Bad Parameters"));
+		}
+	}
+	handclose=0;//不能在外面赋值  否则每次进行操作都需要重新执行程序
+	handopen=0;
+	flag_throw=0;
+	flag_zero=0;
+	flag_check=0;
+	ttt=0;
+
+	return 0;
+/*}*/
+	
 }

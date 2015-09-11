@@ -10,6 +10,8 @@
 #include "LinerPlanSetDlg.h"
 #include "AutoPlanSetDlg.h"
 #include "HandControlDlg.h"
+#include "cvvimage.h"
+#include <opencv2/opencv.hpp>
 //#include "MainFrm.h"
 //#include "RobotControlDoc.h"
 
@@ -132,12 +134,24 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	void linearMove(int direction);
+	void DrawPicToHDC(IplImage* img, unsigned int ID);
+	void Array_Multipy(float inv_T[4][4], float c[4], float multipy[4]);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnButtonKeyControl();
 	afx_msg void OnButtonCamera();
 };
+DWORD WINAPI  OnBnClickedButtonGo(LPVOID lpParameter);
+struct ArmCommand
+{
+	int CmdID;
+	double Param[10];
 
+	static const char* GetCmdName(int cmdID);
+	static int GetCmdID(const char* cmdName);
+	static const std::string GetCmdString(const ArmCommand& ac);
+	static bool GenCommand(ArmCommand& ac, const char *cmdStr, ...);
+};
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
