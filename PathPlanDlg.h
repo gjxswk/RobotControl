@@ -151,12 +151,16 @@ public:
 	void linearMove(int direction);
 	void DrawPicToHDC(IplImage* img, unsigned int ID);
 	void Array_Multipy(float inv_T[4][4], float c[4], float multipy[4]);
+	void getCurrentJointAngel();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnButtonKeyControl();
 	afx_msg void OnButtonCamera();
+	afx_msg void OnButtonCatchMode();
 };
-DWORD WINAPI  OnBnClickedButtonGo(LPVOID lpParameter);
+
+/************not use the MATLAB *****************/
+//DWORD WINAPI  OnBnClickedButtonGo(LPVOID lpParameter);
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
