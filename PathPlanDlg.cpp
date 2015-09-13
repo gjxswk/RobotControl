@@ -928,7 +928,6 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 	}
 	if (nIDEvent == 5)
 	{
-	
 		eResult = mContext.WaitNoneUpdateAll();	///刷新数据的备份区域
 		depthMD = mDepthGenerator.GetDepthMap(); 
 		imgMD = mImageGenerator.GetImageMap();
@@ -1247,7 +1246,7 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 								(0.70+base.Z)/2 == 0.645;//机械臂的安全高度
 							}
 							//往matlab 写入目标点信息goal.txt写入目标的坐标信息
-							FILE* goal = fopen("D:\\Cconection5\\matlabRRT\\goal.txt", "wt");
+							FILE* goal = fopen("D:\\Cconnection5\\matlabRRT\\goal.txt", "wt");
 							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
 							//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
 							//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
@@ -2060,7 +2059,7 @@ void CPathPlanDlg::OnButtonCamera()
 	// 6. correct view port 
 	mDepthGenerator.GetAlternativeViewPointCap().SetViewPoint( mImageGenerator ); //匹配深度图和rgb图
 
-	// 7. tart generate data  
+	// 7. start generate data  
 	eResult = mContext.StartGeneratingAll();
 	// 8. read data 
 	eResult = mContext.WaitNoneUpdateAll();
@@ -2084,6 +2083,7 @@ void CPathPlanDlg::OnButtonCamera()
 	cvNamedWindow("result",1);
 	SetTimer(5,100,NULL);
 	
+	// get the system time, set up the write/save directory
 	char txtName[30]; 
 	SYSTEMTIME systime;
 	GetSystemTime(&systime);
@@ -2110,7 +2110,7 @@ void CPathPlanDlg::OnButtonCamera()
 
 
 	char dir_command[100];
-	char * file_dir = "F:\\projects\\robot\\RobotControl-20150908\\img-save\\";
+	char * file_dir = "D:\\projects\\robot\\RobotControl-20150908\\img-save\\";
 
 	strcpy_s(dir_command,100,"md ");
 	strcat_s(dir_command,100,file_dir);
@@ -2132,7 +2132,7 @@ void CPathPlanDlg::OnButtonCamera()
 DWORD WINAPI OnBnClickedButtonGo(LPVOID lpParameter)
 {//调用matlab程序
 	
-	CPathPlanDlg* tempCrobot = (CPathPlanDlg *)lpParamerter;
+	CPathPlanDlg* tempCrobot = (CPathPlanDlg *)lpParameter;
 
 // 	FILE* goal = fopen("D:\\RRT\\7Dof  9.25\\goal.txt", "wt");
 // 	/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
@@ -2210,7 +2210,6 @@ DWORD WINAPI OnBnClickedButtonGo(LPVOID lpParameter)
 	}
 	else
 	{
-
 		AfxMessageBox(_T("Bad Parameters"));
 	}
 

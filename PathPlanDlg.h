@@ -11,6 +11,16 @@
 #include "AutoPlanSetDlg.h"
 #include "HandControlDlg.h"
 #include "cvvimage.h"
+#include "math.h"
+#include <bitset>
+#include <list>
+//#include "cv.h"
+//#include "highgui.h"
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include "VirtualScene.h"
+#include "Arm.h"
+#include "Hand.h"
 #include <opencv2/opencv.hpp>
 //#include "MainFrm.h"
 //#include "RobotControlDoc.h"
@@ -110,6 +120,11 @@ public:
 	bool deviceIsHalt();
 	int isNear(double a, double b);
 	bool simFinishMoving();
+
+	
+	Arm arm;
+
+	Hand hand;
 //	void InitialSettingData();
 	
 	// Generated message map functions
@@ -142,16 +157,7 @@ public:
 	afx_msg void OnButtonCamera();
 };
 DWORD WINAPI  OnBnClickedButtonGo(LPVOID lpParameter);
-struct ArmCommand
-{
-	int CmdID;
-	double Param[10];
 
-	static const char* GetCmdName(int cmdID);
-	static int GetCmdID(const char* cmdName);
-	static const std::string GetCmdString(const ArmCommand& ac);
-	static bool GenCommand(ArmCommand& ac, const char *cmdStr, ...);
-};
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
