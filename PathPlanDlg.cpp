@@ -1250,8 +1250,15 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 							SetTimer(5,100,NULL);//0.1秒取一次值
 							if ((0.70+base.Z)/2<0.64)
 							{//桌子高度0.7，取目标物中点
-								(0.70+base.Z)/2 == 0.645;//机械臂的安全高度
+								(0.70+base.Z)/2 == 0.645;//机械臂的安全高度  ------??? what is he doing?
 							}
+							// assign the goal position and draw
+							doc->drawGoalFlag = doc_real->drawGoalFlag = true;
+							doc->goalPos[0] = doc_real->goalPos[0] = base.X;
+							doc->goalPos[1] = doc_real->goalPos[1] = base.Y;
+							doc->goalPos[2] = doc_real->goalPos[2] = base.Z;
+							UpdateData(FALSE);
+							view->InvalidateRect(NULL, FALSE);
 							// 往matlab 写入目标点信息goal.txt写入目标的坐标信息
 							FILE* goal = fopen("D:\\Cconnection5\\matlabRRT\\goal.txt", "wt");
 							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
