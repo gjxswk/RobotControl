@@ -1261,7 +1261,7 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 							UpdateData(FALSE);
 							view->InvalidateRect(NULL, FALSE);
 							// 往matlab 写入目标点信息goal.txt写入目标的坐标信息
-							FILE* goal = fopen("D:\\Cconnection5\\matlabRRT\\goal.txt", "wt");
+							FILE* goal = fopen("D:\\projects\\robot\\RobotControl-20150908\\matlabRRT\\goal.txt", "wt");
 							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
 							//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
 							//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
@@ -2172,21 +2172,23 @@ void CPathPlanDlg::getCurrentJointAngel() {
 **move the arm.
 */
 void CPathPlanDlg::OnButtonCatchMode() {
-	FILE* goal = fopen("D:\\Cconnection5\\matlabRRT\\goal.txt", "r");
+	FILE* goal = fopen("D:\\projects\\robot\\RobotControl-20150908\\matlabRRT\\goal.txt", "r");
 							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
 							//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
 							//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
-	double ee[6];
-    fscanf(goal, "%f  %f  %f\r\n", &ee[0], &ee[1], &ee[2]);//相对于己坐标系
+	
+	fscanf(goal, "%f  %f  %f\r\n", &doc->goalPos[0], &doc->goalPos[1], &doc->goalPos[2]);//相对于己坐标系
+	int i = 0;
+	for (i = 0; i < 6; i++) 
+		doc_real->goalPos[i] = doc->goalPos[i];
 	fclose(goal);
 
 	Forwardkine_static(ini_ang, PEint);
-	int i = 0; 
-	for (; i < 6; i++)
+	for (i = 0; i < 6; i++)
 		PEend[i] = PEint[i];
-	PEend[0] = ee[0];
-	PEend[1] = ee[1];
-	PEend[2] = ee[2];
+	PEend[0] = doc->goalPos[0];
+	PEend[1] = doc->goalPos[1];
+	PEend[2] = doc->goalPos[2];
 
 	// PEend: 3 to 5, how to define them is to be test.
 
