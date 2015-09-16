@@ -109,7 +109,7 @@ CPathPlanDlg::CPathPlanDlg(CWnd* pParent /*=NULL*/)
 	m_JNT[6] = 0.0f;
 	m_JNT[7] = 0.0f;
 	for (int i = 0; i < 8; i++) {
-		ini_ang[i] = m_JNT[i];
+		ini_ang[i] = m_JNT[i]*PI/180;
 	}
 	m_ts = 10;
 	m_time = 80;
@@ -202,6 +202,7 @@ BEGIN_MESSAGE_MAP(CPathPlanDlg, CDialog)
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
 	ON_BN_CLICKED(IDC_CAMERA, &CPathPlanDlg::OnButtonCamera)
+	ON_BN_CLICKED(IDC_BUTTON_CATCHMODE, &CPathPlanDlg::OnButtonCatchMode)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -656,6 +657,7 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 		{
 			KillTimer(0);
 			AfxMessageBox("运动学奇异");
+			return;
 		}
 		qmtomModule();
 		ShowJntVariable();
@@ -663,36 +665,43 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 		{
 			KillTimer(0);
 			AfxMessageBox("关节1越界");
+			return;
 		}
 		if (next_ang[2]<-PI/2||next_ang[2]>PI/2)
 		{
 			KillTimer(0);
 			AfxMessageBox("关节2越界");
+			return;
 		}
 		if (next_ang[3]<-PI||next_ang[3]>PI)
 		{
 			KillTimer(0);
 			AfxMessageBox("关节3越界");
+			return;
 		}
 		if (next_ang[4]<-2*PI/3||next_ang[4]>2*PI/3)
 		{
 			KillTimer(0);
 			AfxMessageBox("关节4越界");
+			return;
 		}
 		if (next_ang[5]<-PI||next_ang[5]>PI)
 		{
 			KillTimer(0);
 			AfxMessageBox("关节5越界");
+			return;
 		}
 		if (next_ang[6]<-5*PI/6||next_ang[6]>5*PI/6)
 		{
 			KillTimer(0);
 			AfxMessageBox("关节6越界");
+			return;
 		}
 		if ( next_ang[7]<-PI || next_ang[7]>PI )
 		{
 			KillTimer(0);
 			AfxMessageBox("关节7越界");
+			return;
 		}
 
 		for(i=0; i<8; i++)
@@ -877,7 +886,6 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 			}
 		}
 		end = clock();
-		
 		if (end - start > 30000 && deviceIsHalt())
 		{
 			KillTimer(3);
@@ -1240,28 +1248,41 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 						if (abs(z_t2-z_t1)<0.1)
 						{
 							flag_check=0;
-							SetTimer(1,100,NULL);//0.1秒取一次值
+							SetTimer(5,100,NULL);//0.1秒取一次值
 							if ((0.70+base.Z)/2<0.64)
 							{//桌子高度0.7，取目标物中点
-								(0.70+base.Z)/2 == 0.645;//机械臂的安全高度
+								(0.70+base.Z)/2 == 0.645;//机械臂的安全高度  ------??? what is he doing?
 							}
-							//往matlab 写入目标点信息goal.txt写入目标的坐标信息
+							// assign the goal position and draw
+							doc->drawGoalFlag = doc_real->drawGoalFlag = true;
+							doc->goalPos[0] = doc_real->goalPos[0] = base.X;
+							doc->goalPos[1] = doc_real->goalPos[1] = base.Y;
+							doc->goalPos[2] = doc_real->goalPos[2] = base.Z;
+							UpdateData(FALSE);
+							view->InvalidateRect(NULL, FALSE);
+							// 往matlab 写入目标点信息goal.txt写入目标的坐标信息
 							FILE* goal = fopen("D:\\Cconnection5\\matlabRRT\\goal.txt", "wt");
 							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
 							//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
 							//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
-							fprintf(goal, "%f  %f  %f\r\n",base.X+0.3,base.Y-0.08,(0.70+base.Z)/2+0.03);//相对于己坐标系
+							fprintf(goal, "%f  %f  %f\r\n", base.X+0.3, base.Y-0.08, (0.70+base.Z)/2+0.03);//相对于己坐标系
 							fclose(goal);
+
 
 							base.Z=0.0;
 
 
+							/******************* added by gjx, don't use the MATLAB function ************
 							//调用MATLAB
 							matlab_eng=1;
 							HANDLE hthread;
 							hthread = CreateThread(NULL,0,OnBnClickedButtonGo,(LPVOID)this,0,NULL);
 							CloseHandle(hthread);
 							//hMutex = CreateMutex(NULL,false,NULL);
+                            **********************************************************/
+
+							
+
 							Sleep(10);
 							}
 						}
@@ -2129,6 +2150,73 @@ void CPathPlanDlg::OnButtonCamera()
 	strcat(savefile,txtName);
 }
 
+/*
+**get the current angel of each joint, to set the variable 'ini_ang'
+*/
+void CPathPlanDlg::getCurrentJointAngel() {
+	CMainFrame *pframe;
+	pframe=(CMainFrame*)::AfxGetApp()->GetMainWnd();
+	int device=pframe->pSiderBar->pCtrlTab->pInitHardware->m_device;
+
+	ini_ang[0] = 0.0f;
+	float pos = 0.0;
+	for (int i = 1; i < 8; i++) {
+		::PCube_getPos(device, i, &pos);
+		ini_ang[i] = pos;
+	}
+}
+
+/*
+**this function used to respond to the "catch" button. It get the current goal position from
+**the goal file which is written by camera method. Then it use the linear move function to 
+**move the arm.
+*/
+void CPathPlanDlg::OnButtonCatchMode() {
+	FILE* goal = fopen("D:\\Cconnection5\\matlabRRT\\goal.txt", "r");
+							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
+							//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
+							//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
+	double ee[6];
+    fscanf(goal, "%f  %f  %f\r\n", &ee[0], &ee[1], &ee[2]);//相对于己坐标系
+	fclose(goal);
+
+	Forwardkine_static(ini_ang, PEint);
+	int i = 0; 
+	for (; i < 6; i++)
+		PEend[i] = PEint[i];
+	PEend[0] = ee[0];
+	PEend[1] = ee[1];
+	PEend[2] = ee[2];
+
+	// PEend: 3 to 5, how to define them is to be test.
+
+	doc->des_px = PEend[0];
+	doc->des_py = PEend[1];
+	doc->des_pz = PEend[2];
+	doc->des_aif = PEend[3];
+	doc->des_bit = PEend[4];
+	doc->des_gam = PEend[5];
+
+	doc->Lineartestflag=true;
+	UpdateData(FALSE);
+
+	kn = m_time/t0;
+	view->InvalidateRect(NULL, FALSE);
+
+	LinearMotionplan(ini_ang, basiniPE, PEint, PEend, m_time, m_ts, No, 0, next_baspe, next_basvel, next_ang, next_angvel);
+
+	for(int i=0;i<8;i++)
+	{	
+		ceta[0][i]=ini_ang[i];
+		ceta[1][i]=next_ang[i];//保存数据用
+	}
+	SetTimer(0,100,NULL);
+	start_linear = clock();
+}
+
+
+
+/*********************added by gjx, not use the MATLAB  **********************
 DWORD WINAPI OnBnClickedButtonGo(LPVOID lpParameter)
 {//调用matlab程序
 	
@@ -2202,120 +2290,120 @@ DWORD WINAPI OnBnClickedButtonGo(LPVOID lpParameter)
 		// TODO: 在此添加控件通知处理程序代码
 
 
-	ArmCommand ac;
-
-	if (ArmCommand::GenCommand(ac, "Zero"))
-	{
-		tempCrobot->arm.RunCommand(ac);
-	}
-	else
-	{
-		AfxMessageBox(_T("Bad Parameters"));
-	}
-
-	
-
-	//--Matlab---
-	if (matlab_eng==1)//matlab 运行完了,跟VC接上。
-	{
-		Engine *ep /*= NULL*/;
-		if(!(ep=engOpen(NULL)))
-			::MessageBox(NULL,"Can' start the MATLAB engine","VC调用matlab engine示例程序",MB_OK);//不能注释掉
-		//engEvalString(ep,"addpath('D:\\RRT\\7Dof  9.25');");
-		engEvalString(ep,"addpath('D:\\Cconection5\\matlabRRT');");
-		engEvalString(ep,"main_0521;");//执行matlab的String 
-		//::MessageBox(NULL,"按任意键继续","VC调用matlab engine示例程序 by h&h",MB_OK);
-		engClose(ep);   
-		matlab_eng=0;
-	}
-	// matlab_eng=0;   
-	if (matlab_eng==0)
-	{
-		ArmCommand ac;
-
-		//SetTimer(1,100,NULL);
-		//Sleep(10);
-		if (ArmCommand::GenCommand(ac, "Line"))
-		{
-			tempCrobot->arm.RunCommand(ac);
-		}
-		else
-		{
-			AfxMessageBox(_T("2Bad Parameters"));
-		}
-	}
-	//-----------
-
-	if (handclose==1)
-	{
-		HandCommand hc;
-
-		if (HandCommand::GenCommand(hc, "Close", 1, 1, 1, 0))
-		{
-			tempCrobot->hand.RunCommand(hc);
-		}
-		else
-		{
-			AfxMessageBox(_T("Bad Parameters"));
-		}	
-	}
-   
-	//flag_throw=1;
-
-	if (flag_throw==1)
-	{
-		ArmCommand ac;
-
-		if (ArmCommand::GenCommand(ac, "Throw"))
-		{
-			tempCrobot->arm.RunCommand(ac);
-		}
-		else
-		{
-			AfxMessageBox(_T("1Bad Parameters"));
-		}
-	}
-
-	if (handopen==1)
-	{
-		HandCommand hc;
-
-		if (HandCommand::GenCommand(hc, "Open", 1, 1, 1, 0))
-		{
-			tempCrobot->hand.RunCommand(hc);
-		}
-		else
-		{
-			AfxMessageBox(_T("Bad Parameters"));
-		}	
-	}
-
-	
-		//flag_check=1;
-		//Sleep(1000);
-	if (flag_zero==1)
-	{
-		/*OnBnClickedButtonUninitialize();*/
-		ArmCommand ac;
-
-		if (ArmCommand::GenCommand(ac, "Zero"))
-		{
-			tempCrobot->arm.RunCommand(ac);
-		}
-		else
-		{
-
-			AfxMessageBox(_T("Bad Parameters"));
-		}
-	}
-	handclose=0;//不能在外面赋值  否则每次进行操作都需要重新执行程序
-	handopen=0;
-	flag_throw=0;
-	flag_zero=0;
-	flag_check=0;
-	ttt=0;
-
-	return 0;
-/*}*/
-	
-}
+//	ArmCommand ac;
+//
+//	if (ArmCommand::GenCommand(ac, "Zero"))
+//	{
+//		tempCrobot->arm.RunCommand(ac);
+//	}
+//	else
+//	{
+//		AfxMessageBox(_T("Bad Parameters"));
+//	}
+//
+//	
+//
+//	//--Matlab---
+//	if (matlab_eng==1)//matlab 运行完了,跟VC接上。
+//	{
+//		Engine *ep /*= NULL*/;
+//		if(!(ep=engOpen(NULL)))
+//			::MessageBox(NULL,"Can' start the MATLAB engine","VC调用matlab engine示例程序",MB_OK);//不能注释掉
+//		//engEvalString(ep,"addpath('D:\\RRT\\7Dof  9.25');");
+//		engEvalString(ep,"addpath('D:\\Cconection5\\matlabRRT');");
+//		engEvalString(ep,"main_0521;");//执行matlab的String 
+//		//::MessageBox(NULL,"按任意键继续","VC调用matlab engine示例程序 by h&h",MB_OK);
+//		engClose(ep);   
+//		matlab_eng=0;
+//	}
+//	// matlab_eng=0;   
+//	if (matlab_eng==0)
+//	{
+//		ArmCommand ac;
+//
+//		//SetTimer(1,100,NULL);
+//		//Sleep(10);
+//		if (ArmCommand::GenCommand(ac, "Line"))
+//		{
+//			tempCrobot->arm.RunCommand(ac);
+//		}
+//		else
+//		{
+//			AfxMessageBox(_T("2Bad Parameters"));
+//		}
+//	}
+//	//-----------
+//
+//	if (handclose==1)
+//	{
+//		HandCommand hc;
+//
+//		if (HandCommand::GenCommand(hc, "Close", 1, 1, 1, 0))
+//		{
+//			tempCrobot->hand.RunCommand(hc);
+//		}
+//		else
+//		{
+//			AfxMessageBox(_T("Bad Parameters"));
+//		}	
+//	}
+//   
+//	//flag_throw=1;
+//
+//	if (flag_throw==1)
+//	{
+//		ArmCommand ac;
+//
+//		if (ArmCommand::GenCommand(ac, "Throw"))
+//		{
+//			tempCrobot->arm.RunCommand(ac);
+//		}
+//		else
+//		{
+//			AfxMessageBox(_T("1Bad Parameters"));
+//		}
+//	}
+//
+//	if (handopen==1)
+//	{
+//		HandCommand hc;
+//
+//		if (HandCommand::GenCommand(hc, "Open", 1, 1, 1, 0))
+//		{
+//			tempCrobot->hand.RunCommand(hc);
+//		}
+//		else
+//		{
+//			AfxMessageBox(_T("Bad Parameters"));
+//		}	
+//	}
+//
+//	
+//		//flag_check=1;
+//		//Sleep(1000);
+//	if (flag_zero==1)
+//	{
+//		/*OnBnClickedButtonUninitialize();*/
+//		ArmCommand ac;
+//
+//		if (ArmCommand::GenCommand(ac, "Zero"))
+//		{
+//			tempCrobot->arm.RunCommand(ac);
+//		}
+//		else
+//		{
+//
+//			AfxMessageBox(_T("Bad Parameters"));
+//		}
+//	}
+//	handclose=0;//不能在外面赋值  否则每次进行操作都需要重新执行程序
+//	handopen=0;
+//	flag_throw=0;
+//	flag_zero=0;
+//	flag_check=0;
+//	ttt=0;
+//
+//	return 0;
+///*}*/
+//	
+//}
