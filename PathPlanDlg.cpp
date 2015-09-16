@@ -202,6 +202,7 @@ BEGIN_MESSAGE_MAP(CPathPlanDlg, CDialog)
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
 	ON_BN_CLICKED(IDC_CAMERA, &CPathPlanDlg::OnButtonCamera)
+	ON_BN_CLICKED(IDC_BUTTON_CATCHMODE, &CPathPlanDlg::OnButtonCatchMode)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2160,7 +2161,8 @@ void CPathPlanDlg::getCurrentJointAngel() {
 	ini_ang[0] = 0.0f;
 	float pos = 0.0;
 	for (int i = 1; i < 8; i++) {
-		iniang_[i] = ::PCube_getPos(device, i, pos);
+		::PCube_getPos(device, i, &pos);
+		ini_ang[i] = pos;
 	}
 }
 

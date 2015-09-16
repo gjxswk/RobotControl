@@ -6,6 +6,7 @@
 
 #include "RobotControlDoc.h"
 #include "conio.h"
+#include "GL/GLUT.H"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1206,7 +1207,21 @@ void CRobotControlDoc::DrawInfo()
 
 void CRobotControlDoc::DrawGoal() {
 	if (drawGoalFlag) {
-		
+		// to draw the object here, use a cube to describe it
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		// draw cube
+		glTranslated(goalPos[0], goalPos[1], goalPos[2]);
+		glColor3f(0.0, 0.0, 1.0);
+		// draw center point
+		glPointSize(2.0);
+		glColor3f(1.0, 0.0, 0.0);
+		glBegin(GL_TRIANGLE_STRIP);
+		glVertex3f(goalPos[0], goalPos[1], goalPos[2]);
+		glEnd();
+		CString strTemp;
+		strTemp.Format("%5.3f    %5.3f    %5.3f", goalPos[0], goalPos[1], goalPos[2]);
+		PrintfBitmap(strTemp, goalPos[0], goalPos[1], goalPos[2]);
 	}
 }
 

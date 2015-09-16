@@ -19,8 +19,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include "VirtualScene.h"
-#include "Arm.h"
-#include "Hand.h"
+
 #include <opencv2/opencv.hpp>
 //#include "MainFrm.h"
 //#include "RobotControlDoc.h"
@@ -121,10 +120,6 @@ public:
 	int isNear(double a, double b);
 	bool simFinishMoving();
 
-	
-	Arm arm;
-
-	Hand hand;
 //	void InitialSettingData();
 	
 	// Generated message map functions

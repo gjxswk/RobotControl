@@ -170,6 +170,7 @@
 #define IDC_RADIO_JXB                   1134
 #define IDC_KEY_CONTROL                 1141
 #define IDC_CAMERA                      1142
+#define IDC_BUTTON_CATCHMODE            1145
 #define IDC_PARAMETER_TAB               2000
 #define IDM_INITMODULE                  32771
 #define IDM_RESETMODULE                 32772
@@ -185,7 +186,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        137
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1143
+#define _APS_NEXT_CONTROL_VALUE         1146
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
