@@ -58,14 +58,14 @@ IplImage *image;
 bool StartBtnFlag;
 bool flag_check;
 bool saveimg;
-bool hz_first=1;
+bool hz_first=0;
 bool hz_second=1;
 
 int k = 0;
 char txtfile[100];
 char savefile[100];
 float z_min;
-int ttt;
+int ttt = 0;
 float z_t1=0.0f;
 float z_t2=0.0f;
 
@@ -527,6 +527,8 @@ void CPathPlanDlg::OnButtonInit()
 	CMainFrame* frame=(CMainFrame*)AfxGetApp()->GetMainWnd();
 	view=(CRobotControlView*)frame->GetActiveView();
 	doc=view->GetDocument()->doc_delay; 
+	doc_real = view->GetDocument()->doc_real;
+
 	((CButton*)GetDlgItem(IDC_RADIO_LINEARPLAN))->EnableWindow(true);
 	((CButton*)GetDlgItem(IDC_RADIO_AUTOPLAN))->EnableWindow(true);
 	((CButton*)GetDlgItem(IDC_RADIO_PROGRAMM))->EnableWindow(true);
@@ -596,7 +598,8 @@ int CPathPlanDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	pAutoPlanSetDlg->Create(IDD_AUTOPLANSETTING,this);
 	pHandControlDlg=new CHandControlDlg();
 	pHandControlDlg->Create(IDD_HANDCONTROL,this);
-	
+	pDepthImgDlg = new DepthImgDlg();
+	pDepthImgDlg->Create(IDD_DepthImg, this);
 	return 0;
 }
 
@@ -613,16 +616,41 @@ void CPathPlanDlg::OnRadioLinearplan()
 	
 }
 
-void CPathPlanDlg::DrawPicToHDC(IplImage* img, unsigned int ID)
+void CPathPlanDlg::DrawPicToHDC(IplImage* img, unsigned int ID, int mode = 0)
 {
+	if (COMPILE) {
+		_cprintf("here beging drawing the dlg client.\n");
+	}
 	CDC *pDC = GetDlgItem(ID)->GetDC();
+	if (COMPILE) {
+		_cprintf("here get the dlg client.\n");
+	}
 	HDC hDC= pDC->GetSafeHdc();
 	CRect rect;
+	if (COMPILE) {
+		_cprintf("here get the dlg client.\n");
+	}
 	GetDlgItem(ID)->GetClientRect(&rect);
+	if (COMPILE) {
+		_cprintf("after getting the dlg client.\n");
+	}
 	CvvImage cimg;
 	cimg.CopyOf(img,img->nChannels);
-	cimg.DrawToHDC(hDC,&rect);
+	if (mode == 0) {
+		cimg.DrawToHDC(hDC,&rect);
+	}
+	if (mode == -1) {
+		rect.right >>= 1;
+		cimg.DrawToHDC(hDC, &rect);
+	}
+	if (mode == 1) {
+		rect.left = rect.Width() / 2;
+		cimg.DrawToHDC(hDC, &rect);
+	}
 	ReleaseDC(pDC);
+	if (COMPILE) {
+		_cprintf("after drawing.\n");
+	}
 }
 
 void CPathPlanDlg::OnTimer(UINT nIDEvent) 
@@ -936,6 +964,9 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 	}
 	if (nIDEvent == 5)
 	{
+		if (COMPILE) {
+			_cprintf("Here in timer 5, beginning...\n");
+		}
 		eResult = mContext.WaitNoneUpdateAll();	///刷新数据的备份区域
 		depthMD = mDepthGenerator.GetDepthMap(); 
 		imgMD = mImageGenerator.GetImageMap();
@@ -948,12 +979,15 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 		memcpy(bgrImg->imageData,imgMD,640*480*3);
 		cvCvtColor(bgrImg,rgbImg,CV_RGB2BGR);
 		mDepthGenerator.GetMetaData(mDepthMD);
-	
-		/****************** annotation by gjx ********************/
-		// DrawPicToHDC(depthImg, IDC_STATIC_DEPTH);
-		/*********************************************************/
 
-		if (flag_check==0)
+		// draw the depth image to the main window
+		
+		//pDepthImgDlg->MoveWindow(750, 150, 330, 410);
+		//pDepthImgDlg->ShowWindow(SW_SHOW);
+		//DrawPicToHDC(depthImg, IDR_MAINFRAME, 1);
+		cvShowImage("depth", depthImg);
+		
+		if (flag_check == 0)
 		{
 			if (saveimg == 1)
 			{
@@ -1011,8 +1045,8 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 
 			index[i]=0.0;
 
-			//if(Point3D_real[i].X>5&&Point3D_real[i].X<300&&Point3D_real[i].Y<500&&Point3D_real[i].Y>-500)///////选择感兴趣的部分        index=0时会出现错误  故如果选择的感兴趣的区域没有障碍物就会在运行时出错
-			//if(Point3D_image[i].X>290&&Point3D_image[i].X<370&&Point3D_image[i].Y<140&&Point3D_image[i].Y>50)
+			//if(Point3D_real[i].X>5&&Point3D_real[i].X<480&&Point3D_real[i].Y<600&&Point3D_real[i].Y>50)///////选择感兴趣的部分        index=0时会出现错误  故如果选择的感兴趣的区域没有障碍物就会在运行时出错
+			//if(Point3D_image[i].X>5&&Point3D_image[i].X<480&&Point3D_image[i].Y<600&&Point3D_image[i].Y>50)
 			if(Point3D_image[i].X>350&&Point3D_image[i].X<480&&Point3D_image[i].Y<220&&Point3D_image[i].Y>100)
 			//if(Point3D_image[i].X>280&&Point3D_image[i].X<400&&Point3D_image[i].Y<220&&Point3D_image[i].Y>100)//
 			{
@@ -1020,10 +1054,11 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 			}
 		}
 	
-		if (hz_second==1) //去除程序开始时圈定范围的黑框
-		{
-			memcpy(hz1,hz3,640*480*2);
-		}
+		// annotation by gjx
+		//if (hz_second==1) //去除程序开始时圈定范围的黑框
+		//{
+		//	memcpy(hz1,hz3,640*480*2);
+		//}
 		if (hz_first==0)
 		{
 			memcpy(hz1,hz3,640*480*2);
@@ -1097,7 +1132,6 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 	
 		//DrawPicToHDC(depthImg, IDC_STATIC_DEPTH);
 
-
 		cvShowImage("result",depthImg);
 		//cvReleaseImage(&depthImg);
 		//cvThreshold(depthImg,dst,30,255,CV_THRESH_BINARY);
@@ -1140,6 +1174,9 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
  			CvRect r=((CvContour*)cont)->rect;
  			if (r.height*r.width<9000&&r.height*r.width>200)//判断语句必须加  否则输出的永远是320 240
  			{
+				if (COMPILE) {
+					_cprintf("begin to draw the rectanglein rgbImg.\n");
+				}
  				cvRectangle(rgbImg,cvPoint(r.x,r.y),cvPoint(r.x+r.width,r.y+r.height),CV_RGB(0,255,0),1,CV_AA,0); //画绿框
  				pixelx_green=r.x+0.5*r.width;
  				pixely_green=r.y+0.5*r.height;
@@ -1148,9 +1185,8 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
  
  		}
 	    
-		/**************************annotated by gjx************************************/
-		//DrawPicToHDC(rgbImg, IDC_STATIC_COLOR); 
-		/******************************************************************************/
+		//DrawPicToHDC(rgbImg, IDR_MAINFRAME, 1); 
+		cvShowImage("rgbImg", rgbImg);
 	
 	   
 	
@@ -1232,68 +1268,87 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 		float zz=0.0;
 		zz=base.Z;
 		
-		
-		if ( zz>=0.5&&zz<0.9)//区别静止和运动
+		if (COMPILE) {
+			_cprintf("Before writing the result into file.\n");
+			system("pause");
+		}
+		if ( zz>=0.5 && zz<0.9)//区别静止和运动
 		{
-			
-			if (flag_check==1)//机械臂初始化之后，才执行下面的动作
+			if (COMPILE) {
+				_cprintf("Here begin to enter the first if.\n");
+			}
+			if (ttt==0)//
 			{
-				if (ttt==0)//
+				if (COMPILE) {
+					_cprintf("Here enter the ttt if.\n");
+				}
+				z_t1=base.Z;
+				if(z_t2 == 0.0f)
+					z_t2 = z_t1;
+				else
 				{
-					z_t1=base.Z;
-					if(z_t2 == 0.0f)
-						z_t2 = z_t1;
-					else
+					if (abs(z_t2-z_t1)<0.1)
 					{
-						if (abs(z_t2-z_t1)<0.1)
-						{
-							flag_check=0;
-							SetTimer(5,100,NULL);//0.1秒取一次值
-							if ((0.70+base.Z)/2<0.64)
-							{//桌子高度0.7，取目标物中点
-								(0.70+base.Z)/2 == 0.645;//机械臂的安全高度  ------??? what is he doing?
-							}
-							// assign the goal position and draw
-							doc->drawGoalFlag = doc_real->drawGoalFlag = true;
-							doc->goalPos[0] = doc_real->goalPos[0] = base.X;
-							doc->goalPos[1] = doc_real->goalPos[1] = base.Y;
-							doc->goalPos[2] = doc_real->goalPos[2] = base.Z;
-							UpdateData(FALSE);
-							view->InvalidateRect(NULL, FALSE);
-							// 往matlab 写入目标点信息goal.txt写入目标的坐标信息
-							FILE* goal = fopen("D:\\projects\\robot\\RobotControl-20150908\\matlabRRT\\goal.txt", "wt");
-							/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
-							//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
-							//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
-							fprintf(goal, "%f  %f  %f\r\n", base.X+0.3, base.Y-0.08, (0.70+base.Z)/2+0.03);//相对于己坐标系
-							fclose(goal);
+						flag_check=0;
+						if (COMPILE) {
+							_cprintf("Here enter the abs if.\n");
+						}
+						SetTimer(5,100,NULL);//0.1秒取一次值
+						
+						if ((0.70+base.Z)/2<0.64)
+						{//桌子高度0.7，取目标物中点
+							(0.70+base.Z)/2 == 0.645;//机械臂的安全高度  ------??? what is he doing?
+						}
+						// assign the goal position and draw
+						
+						doc->drawGoalFlag = doc_real->drawGoalFlag = true;
+						doc->goalPos[0] = doc_real->goalPos[0] = base.X;
+						doc->goalPos[1] = doc_real->goalPos[1] = base.Y;
+						doc->goalPos[2] = doc_real->goalPos[2] = base.Z;
+						if (COMPILE) {
+							_cprintf("Here begin to redraw the model.\n");
+						}
+						UpdateData(FALSE);
+						view->InvalidateRect(NULL, FALSE);
+						if (COMPILE) {
+							_cprintf("Here begin to write the result into the file.\n");
+						}
+						// 往matlab 写入目标点信息goal.txt写入目标的坐标信息
+						FILE* goal = fopen("D:\\projects\\robot\\RobotControl-20150908\\matlabRRT\\goal.txt", "wt");
+						/*fprintf( goal, "%f  %f  %f\r\n",base.X,base.Y-0.09,base.Z+0.05);*/
+						//base.X = -0.7323; base.Y = -0.1291; base.Z = 0.6666;
+						//fprintf(goal, "%f  %f  %f\r\n",base.X,base.Y,base.Z);
+						fprintf(goal, "%f  %f  %f\r\n", base.X+0.3, base.Y-0.08, (0.70+base.Z)/2+0.03);//相对于己坐标系
+						fclose(goal);
+						if (COMPILE) {
+							_cprintf("Here end write writing file.\n");
+						}
 
 
-							base.Z=0.0;
+						base.Z=0.0;
 
 
-							/******************* added by gjx, don't use the MATLAB function ************
-							//调用MATLAB
-							matlab_eng=1;
-							HANDLE hthread;
-							hthread = CreateThread(NULL,0,OnBnClickedButtonGo,(LPVOID)this,0,NULL);
-							CloseHandle(hthread);
-							//hMutex = CreateMutex(NULL,false,NULL);
-                            **********************************************************/
+						/******************* added by gjx, don't use the MATLAB function ************
+						//调用MATLAB
+						matlab_eng=1;
+						HANDLE hthread;
+						hthread = CreateThread(NULL,0,OnBnClickedButtonGo,(LPVOID)this,0,NULL);
+						CloseHandle(hthread);
+						//hMutex = CreateMutex(NULL,false,NULL);
+                        **********************************************************/
 
 							
 
-							Sleep(10);
-							}
-						}
-						z_t2 = z_t1;
+						Sleep(10);
 					}
 				}
-				ttt++;
-				if (ttt==20)
-				{
-					ttt=0;
-				}
+				z_t2 = z_t1;
+			}
+			ttt++;
+			if (ttt==20)
+			{
+				ttt=0;
+			}
 			
 		}
 
@@ -2059,6 +2114,9 @@ void CPathPlanDlg::OnButtonCamera()
 {
 	// TODO: 在此添加控件通知处理程序代码
 
+	if (COMPILE) {
+		_cprintf("Here in function: onButtonCamera.\n");
+	}
 	eResult = mContext.Init();  
 	//CheckOpenNIError( eResult, "initialize context" );  
 
@@ -2073,10 +2131,12 @@ void CPathPlanDlg::OnButtonCamera()
 	XnMapOutputMode mapMode; 
 	mapMode.nXRes = 640; 
 	mapMode.nYRes = 480;  
-	mapMode.nFPS =30; //帧数 
+	mapMode.nFPS =30; //帧数
 	eResult = mDepthGenerator.SetMapOutputMode( mapMode ); 
 	eResult = mImageGenerator.SetMapOutputMode( mapMode );  
-
+	if (COMPILE) {
+		_cprintf("Here in function: onButtonCamera.\n");
+	}
 	// 6. correct view port 
 	mDepthGenerator.GetAlternativeViewPointCap().SetViewPoint( mImageGenerator ); //匹配深度图和rgb图
 
@@ -2084,6 +2144,9 @@ void CPathPlanDlg::OnButtonCamera()
 	eResult = mContext.StartGeneratingAll();
 	// 8. read data 
 	eResult = mContext.WaitNoneUpdateAll();
+	if (COMPILE) {
+		_cprintf("Here in function: onButtonCamera.\n");
+	}
 
 	dep16Img = cvCreateImage(cvSize(640,480),IPL_DEPTH_16U,1);
 	bgrImg = cvCreateImage(cvSize(640,480),IPL_DEPTH_8U,3);
@@ -2148,6 +2211,10 @@ void CPathPlanDlg::OnButtonCamera()
 	endposition = fopen(txtfile, "wt+");
 	strcpy(savefile,file_dir);
 	strcat(savefile,txtName);
+
+	if (COMPILE) {
+		_cprintf("Here end the function: onButtonCamera.\n");
+	}
 }
 
 /*

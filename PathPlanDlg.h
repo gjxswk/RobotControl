@@ -10,6 +10,7 @@
 #include "LinerPlanSetDlg.h"
 #include "AutoPlanSetDlg.h"
 #include "HandControlDlg.h"
+#include "DepthImgDlg.h"
 #include "cvvimage.h"
 #include "math.h"
 #include <bitset>
@@ -40,6 +41,7 @@ public:
 	CLinerPlanSetDlg* pLinerPlanSetDlg;
 	CAutoPlanSetDlg* pAutoPlanSetDlg;
 	CHandControlDlg* pHandControlDlg;
+	DepthImgDlg* pDepthImgDlg;
 	void SendMessageToJXB();
 //	friend class CMainFrame;
 // Dialog Data
@@ -144,7 +146,7 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	void linearMove(int direction);
-	void DrawPicToHDC(IplImage* img, unsigned int ID);
+	void DrawPicToHDC(IplImage* img, unsigned int ID, int mode);
 	void Array_Multipy(float inv_T[4][4], float c[4], float multipy[4]);
 	void getCurrentJointAngel();
 	//}}AFX_MSG

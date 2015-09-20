@@ -75,7 +75,7 @@ BOOL CRobotControlView::PreCreateWindow(CREATESTRUCT& cs)    //--ÀÖ--´°ÌåÊôĞÔº¯Ê
 /////////////////////////////////////////////////////////////////////////////
 // CRobotControlView drawing
 
-void CRobotControlView::OnDraw(CDC* pDC)  //----ÀÖ---»æÍ¼º¯Êı
+void CRobotControlView::OnDraw(CDC* pDC) 
 {
 	CRobotControlMultiDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -109,7 +109,7 @@ void CRobotControlView::OnDraw(CDC* pDC)  //----ÀÖ---»æÍ¼º¯Êı
 	}
 
 	pDoc->doc_delay->RenderScene();
-
+	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45,pDoc->doc_real->aspect,0.1,200.0);
