@@ -161,11 +161,18 @@ CRobotControlDoc::CRobotControlDoc()   //---乐--模型读取函数
 	m_Module[7].rot.z=0;
     m_Module[7].JntVar_rot=0; 
     m_Module[7].JntVar_rot1=0; 
+
+	if (COMPILE) {
+		AllocConsole();
+	}
 	
 }
 
 CRobotControlDoc::~CRobotControlDoc()  //---乐---析构函数
 {
+	if (COMPILE) {
+		FreeConsole();
+	}
 	delete [] angelset;
 	delete [] jnt;
 
@@ -1207,12 +1214,16 @@ void CRobotControlDoc::DrawInfo()
 
 void CRobotControlDoc::DrawGoal() {
 	if (drawGoalFlag) {
+		if (COMPILE) {
+			_cprintf("Here begin to draw the cube in model view.\n");
+		}
 		// to draw the object here, use a cube to describe it
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		// draw cube
 		glTranslated(goalPos[0], goalPos[1], goalPos[2]);
 		glColor3f(0.0, 0.0, 1.0);
+		glutSolidCube(3.0f);
 		// draw center point
 		glPointSize(2.0);
 		glColor3f(1.0, 0.0, 0.0);
@@ -1222,6 +1233,9 @@ void CRobotControlDoc::DrawGoal() {
 		CString strTemp;
 		strTemp.Format("%5.3f    %5.3f    %5.3f", goalPos[0], goalPos[1], goalPos[2]);
 		PrintfBitmap(strTemp, goalPos[0], goalPos[1], goalPos[2]);
+		if (COMPILE) {
+			_cprintf("Here end drawing the cube and center point.\n");
+		}
 	}
 }
 

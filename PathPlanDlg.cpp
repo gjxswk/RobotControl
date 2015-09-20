@@ -618,22 +618,10 @@ void CPathPlanDlg::OnRadioLinearplan()
 
 void CPathPlanDlg::DrawPicToHDC(IplImage* img, unsigned int ID, int mode = 0)
 {
-	if (COMPILE) {
-		_cprintf("here beging drawing the dlg client.\n");
-	}
 	CDC *pDC = GetDlgItem(ID)->GetDC();
-	if (COMPILE) {
-		_cprintf("here get the dlg client.\n");
-	}
 	HDC hDC= pDC->GetSafeHdc();
 	CRect rect;
-	if (COMPILE) {
-		_cprintf("here get the dlg client.\n");
-	}
 	GetDlgItem(ID)->GetClientRect(&rect);
-	if (COMPILE) {
-		_cprintf("after getting the dlg client.\n");
-	}
 	CvvImage cimg;
 	cimg.CopyOf(img,img->nChannels);
 	if (mode == 0) {
@@ -648,9 +636,6 @@ void CPathPlanDlg::DrawPicToHDC(IplImage* img, unsigned int ID, int mode = 0)
 		cimg.DrawToHDC(hDC, &rect);
 	}
 	ReleaseDC(pDC);
-	if (COMPILE) {
-		_cprintf("after drawing.\n");
-	}
 }
 
 void CPathPlanDlg::OnTimer(UINT nIDEvent) 
@@ -674,11 +659,6 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 		{
 			now_baspe[i]=next_baspe[i];
 			now_basvel[i]=next_basvel[i];
-		}
-		if (COMPILE) {
-			for (i = 0; i < 6; i++) {
-				_cprintf("next_ang(%d): %f\n", i, next_ang[i]);
-			}
 		}
 		LinearMotionplan(now_ang, now_baspe, PEint, PEend, m_time, m_ts, No+1, 0, next_baspe, next_basvel, next_ang, next_angvel);
 		if (SingularFlag==1)
@@ -739,9 +719,6 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 		time_t cur_time = clock();
 		int prc_time = cur_time - start_linear;
 		if (btn_release && prc_time > 500) {
-			if (COMPILE) {
-				_cprintf("The button has released.\n");
-			}
 			KillTimer(0);
 		}
 		No++;
@@ -1274,14 +1251,8 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 		}
 		if ( zz>=0.5 && zz<0.9)//区别静止和运动
 		{
-			if (COMPILE) {
-				_cprintf("Here begin to enter the first if.\n");
-			}
 			if (ttt==0)//
 			{
-				if (COMPILE) {
-					_cprintf("Here enter the ttt if.\n");
-				}
 				z_t1=base.Z;
 				if(z_t2 == 0.0f)
 					z_t2 = z_t1;
@@ -1290,9 +1261,6 @@ void CPathPlanDlg::OnTimer(UINT nIDEvent)
 					if (abs(z_t2-z_t1)<0.1)
 					{
 						flag_check=0;
-						if (COMPILE) {
-							_cprintf("Here enter the abs if.\n");
-						}
 						SetTimer(5,100,NULL);//0.1秒取一次值
 						
 						if ((0.70+base.Z)/2<0.64)
