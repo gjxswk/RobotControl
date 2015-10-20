@@ -154,6 +154,7 @@ public:
 	afx_msg void OnButtonKeyControl();
 	afx_msg void OnButtonCamera();
 	afx_msg void OnButtonCatchMode();
+	afx_msg void OnButtonShutCamera();
 };
 
 /************not use the MATLAB *****************/

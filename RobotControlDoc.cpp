@@ -16,7 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define  BACKGROUND     1
 #define  OGL_AXIS_DLIST 2
-#define COMPILE true
+#define COMPILE false
 /////////////////////////////////////////////////////////////////////////////
 // CRobotControlDoc
 
@@ -781,9 +781,13 @@ void CRobotControlDoc::RenderScene()
 	}   
 
 	DrawBase();
+	
 	glPushMatrix();
 	glTranslatef(0.0,0.0,0.31);
 	DrawModule(0);
+
+	// added by gjx
+	DrawGoal();
 	for(int i=1; i<8; i++)  
 	{
 		glRotated(m_Module[i].rot.z, 0.0f, 0.0f, 1.0f);
@@ -796,8 +800,7 @@ void CRobotControlDoc::RenderScene()
     } 
 	DrawInfo();
 
-	// added by gjx
-	DrawGoal();
+	
 	glPopMatrix();
 	
 	
@@ -1218,21 +1221,24 @@ void CRobotControlDoc::DrawGoal() {
 			_cprintf("Here begin to draw the cube in model view.\n");
 		}
 		// to draw the object here, use a cube to describe it
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		glPushMatrix();
+		//glMatrixMode(GL_MODELVIEW);
+		//glLoadIdentity();
 		// draw cube
-		glTranslated(goalPos[0], goalPos[1], goalPos[2]);
+		glTranslated(goalPos[1], -goalPos[0], goalPos[2]);
 		glColor3f(0.0, 0.0, 1.0);
-		glutSolidCube(3.0f);
+		glutWireCube(0.3f);
+		glutSolidSphere(0.05f, 50, 50);
 		// draw center point
-		glPointSize(2.0);
+		glPointSize(0.3);
 		glColor3f(1.0, 0.0, 0.0);
 		glBegin(GL_TRIANGLE_STRIP);
-		glVertex3f(goalPos[0], goalPos[1], goalPos[2]);
+		glVertex3f(goalPos[1], -goalPos[0], goalPos[2]);
 		glEnd();
 		CString strTemp;
 		strTemp.Format("%5.3f    %5.3f    %5.3f", goalPos[0], goalPos[1], goalPos[2]);
 		PrintfBitmap(strTemp, goalPos[0], goalPos[1], goalPos[2]);
+		glPopMatrix();
 		if (COMPILE) {
 			_cprintf("Here end drawing the cube and center point.\n");
 		}
