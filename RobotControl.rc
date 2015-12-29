@@ -153,6 +153,20 @@ BEGIN
     END
 END
 
+IDR_MENU_DATASHOW MENU
+BEGIN
+    POPUP "选择"
+    BEGIN
+        MENUITEM "关节角1",                        IDR_MENU_DATASHOW
+        MENUITEM "关节角2",                        ID_32778
+        MENUITEM "关节角3",                        ID_32779
+        MENUITEM "关节角4",                        ID_32780
+        MENUITEM "关节角5",                        ID_32781
+        MENUITEM "关节角6",                        ID_32782
+        MENUITEM "关节角7",                        ID_32783
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -342,11 +356,12 @@ BEGIN
     LTEXT           "1m",IDC_STATIC,156,35,14,8
     CONTROL         "仿真",IDC_RADIO_SUMU,"Button",BS_AUTORADIOBUTTON,30,220,44,11
     CONTROL         "机械臂",IDC_RADIO_JXB,"Button",BS_AUTORADIOBUTTON,98,220,44,11
-    PUSHBUTTON      "保存数据",IDC_BUTTON_SAVEDATA,67,327,41,13
     PUSHBUTTON      "键盘控制",IDC_KEY_CONTROL,119,197,44,14
     PUSHBUTTON      "摄像机",IDC_CAMERA,115,326,41,14
     PUSHBUTTON      "抓取目标物",IDC_BUTTON_CATCHMODE,19,353,38,14
     PUSHBUTTON      "关闭摄像图",IDC_BUTTON_SHUTCAMERA,115,353,40,14
+    PUSHBUTTON      "数据显示",IDC_BUTTON_DATASHOW,62,352,50,14
+    PUSHBUTTON      "保存数据",IDC_BUTTON_SAVEDATA,67,327,41,13
 END
 
 IDD_LINERPLANSETTING DIALOG 0, 0, 162, 141
@@ -451,6 +466,15 @@ STYLE DS_SETFONT | WS_CHILD
 FONT 9, "宋体", 400, 0, 0x0
 BEGIN
     LTEXT           "TODO: 布局窗体视图",IDC_STATIC,55,42,74,8
+END
+
+IDD_DIALOG_DATASHOW DIALOGEX 0, 0, 316, 182
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关节角坐标图"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,205,161,50,14
+    PUSHBUTTON      "取消",IDCANCEL,259,161,50,14
 END
 
 
@@ -568,6 +592,14 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 185
         BOTTOMMARGIN, 93
+    END
+
+    IDD_DIALOG_DATASHOW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 175
     END
 END
 #endif    // APSTUDIO_INVOKED

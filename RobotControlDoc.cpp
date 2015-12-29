@@ -1215,6 +1215,7 @@ void CRobotControlDoc::DrawInfo()
 
 }
 
+// add in 2015 by gjx, to draw the simple goal model in the window
 void CRobotControlDoc::DrawGoal() {
 	if (drawGoalFlag) {
 		if (COMPILE) {

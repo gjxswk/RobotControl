@@ -205,6 +205,7 @@ BEGIN_MESSAGE_MAP(CPathPlanDlg, CDialog)
 	ON_BN_CLICKED(IDC_CAMERA, &CPathPlanDlg::OnButtonCamera)
 	ON_BN_CLICKED(IDC_BUTTON_CATCHMODE, &CPathPlanDlg::OnButtonCatchMode)
 	ON_BN_CLICKED(IDC_BUTTON_SHUTCAMERA, &CPathPlanDlg::OnButtonShutCamera)
+	ON_BN_CLICKED(IDC_BUTTON_DATASHOW, &CPathPlanDlg::OnButtonDataShow)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2511,4 +2512,10 @@ void CPathPlanDlg::OnButtonShutCamera()
 	if (cvNamedWindow("rgbImg", 1) == 1) {
 		destroyWindow("rgbImg");
 	}*/
+}
+
+
+void CPathPlanDlg::OnButtonDataShow()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }
