@@ -15,7 +15,6 @@
 #define IDD_HANDCONTROL                 136
 #define IDD_DepthImg                    137
 #define IDD_DIALOG_DATASHOW             138
-#define IDR_MENU1                       139
 #define IDC_BUTTON_PMACOPEN             1000
 #define IDC_EDIT_VELOCITY               1001
 #define IDC_BUTTON_PMACCLOSE            1002
@@ -200,7 +199,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        141
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1154
+#define _APS_NEXT_CONTROL_VALUE         1156
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -15,6 +15,8 @@ public:
 	enum { IDD = IDD_DIALOG_DATASHOW };
 
 protected:
+	//{{AFX_MSG(CSideBar)
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
 
 	DECLARE_MESSAGE_MAP()

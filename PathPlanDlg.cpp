@@ -11,6 +11,7 @@
 #include "InitHardware.h"
 #include "conio.h"
 #include "mmsystem.h"
+#include "DataShow.h"
 #include "XnCppWrapper.h"
 
 
@@ -1856,7 +1857,7 @@ void CPathPlanDlg::OnRadioProgramm()
 }
 
 
-void CPathPlanDlg::OnButtonKeyControl()
+void CPathPlanDlg::OnButtonKeyControl() 
 {
 	ctrl_mode = 1;
 	// use joyGetPos method to justify the current state of device
@@ -1995,7 +1996,7 @@ void CPathPlanDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
 LRESULT CPathPlanDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 
-	if (ctrl_mode == 1) {
+	if (ctrl_mode == 1) { // the machine mode
 		switch(message){	
 		case MM_JOY1BUTTONDOWN :
 			btn_release = false;
@@ -2517,5 +2518,14 @@ void CPathPlanDlg::OnButtonShutCamera()
 
 void CPathPlanDlg::OnButtonDataShow()
 {
-	// TODO: 在此添加控件通知处理程序代码
+//	// TODO: Add your control notification handler code here
+//	dataShowDlg = new DataShow(IDD_DIALOG_DATASHOW);
+//	// ((CButton*)GetDlgItem(IDC_RADIO_LINEARPLAN))->SetCheck(BST_CHECKED);
+//	Planradio=IDC_RADIO_LINEARPLAN;
+//	dataShowDlg->MoveWindow(350, 150, 300, 260);
+//	dataShowDlg->EnableWindow(true);
+//	//pLinerPlanSetDlg->ShowWindow(SW_SHOW);
+//	//((CButton*)GetDlgItem(IDC_BUTTON_INIOK))->EnableWindow(true);
+//	///////
+////	COMPlanradio=0x00;
 }

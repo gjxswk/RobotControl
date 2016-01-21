@@ -13,6 +13,7 @@
 #include "DepthImgDlg.h"
 #include "cvvimage.h"
 #include "math.h"
+#include "DataShow.h"
 #include <bitset>
 #include <list>
 //#include "cv.h"
@@ -42,6 +43,7 @@ public:
 	CAutoPlanSetDlg* pAutoPlanSetDlg;
 	CHandControlDlg* pHandControlDlg;
 	DepthImgDlg* pDepthImgDlg;
+	DataShow* dataShowDlg;
 	void SendMessageToJXB();
 //	friend class CMainFrame;
 // Dialog Data
